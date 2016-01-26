@@ -18,12 +18,20 @@ public class Arduino {
     private static OutputStream portOutStream;
     private static InputStream portInStream;
     
+    /**
+     * Add the arduino.
+     * @param n = Arduino name.
+     * @param c = COM port to connect to. 
+     */
     public Arduino(String n, String c){
         name = n;
         com = c;
         connect();
     }
     
+    /**
+     * Connect to the Arduino.
+     */
     public void connect(){
         try {
             portID = CommPortIdentifier.getPortIdentifier(com);
@@ -42,6 +50,14 @@ public class Arduino {
         }
     }
     
+    public void write(){
+        
+    }
+    
+    /**
+     * Set the COM port. Runs connect() after. 
+     * @param c 
+     */
     public void setCOM(String c){
         com = c;
         connect();
@@ -61,6 +77,5 @@ public class Arduino {
      */
     public String getName(){
         return name;
-    }
-    
+    } 
 }
