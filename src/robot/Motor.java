@@ -28,7 +28,7 @@ public class Motor {
     }
     
     /**
-     * Returns the value of the motor.
+     * Returns the value of the motor between 0-1.
      * @return 
      */
     public float getValue(){
@@ -36,19 +36,19 @@ public class Motor {
     }
     
     /**
-     * Returns the value as an int.
+     * Returns the value as an int between 0 - 100.
      * @return 
      */
     public int getValueInt(){
-        return (int)value;
+        return (int)(value*100);
     }
     
     /**
-     * Returns the value as a double.
+     * Returns the value as a double between 0 - 100.
      * @return 
      */
     public double getValueDouble(){
-        return (double)value;
+        return (double)(value*100);
     }
     
     /**
@@ -56,7 +56,15 @@ public class Motor {
      * @return 
      */
     public String getValueHex(){
-        return Integer.toHexString(this.getValueInt());
+        int i = (int) (value*250);
+        String h = Integer.toHexString(this.getValueInt());
+        
+        if(h.length() < 2){
+            h = "0" + h;
+        } else if(h.length() > 2){
+            
+        }
+        return h;
     }
     
     /**

@@ -13,6 +13,8 @@ import java.util.logging.Logger;
 public class Arduino {
     private String com = "";
     private String name;
+    private boolean connected = false;
+    
     private static CommPortIdentifier portID;
     private static SerialPort port;
     private static OutputStream portOutStream;
@@ -40,18 +42,44 @@ public class Arduino {
             portOutStream = port.getOutputStream();
             portInStream = port.getInputStream();
             
+            connected = true;
+            
         } catch (NoSuchPortException ex) {
+            connected = false;
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (PortInUseException ex) {
+            connected = false;
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
+            connected = false;
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
             port.close();
         }
     }
     
-    public void write(){
-        
+    /**
+     * Write to the Arduino. 
+     * @param m array of motors.
+     * @param s array of servos.
+     */
+    public void write(Motor[] m, Servo[] s){
+        if(connected){
+            String write = "T";
+            
+            for(int i = 0; i < m.length; i++){
+                write += m[i].getValueHex();
+            }
+            
+            for(int i = 0; i < s.length; i++){
+                write += s[i].getValueHex();
+            }
+            
+            try {
+                portOutStream.write(write.getBytes());
+            } catch (IOException ex) {
+                Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
     }
     
     /**

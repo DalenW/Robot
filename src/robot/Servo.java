@@ -56,7 +56,15 @@ public class Servo {
      * @return 
      */
     public String getValueHex(){
-        return Integer.toHexString(this.getValueInt());
+        int i = (int) (value*180);
+        String h = Integer.toHexString(i);
+        
+        if(h.length() < 2){
+            h = "0" + h;
+        } else if(h.length() > 2){
+            
+        }
+        return h;
     }
     
     /**
