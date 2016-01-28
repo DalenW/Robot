@@ -13,13 +13,6 @@ public class Motor {
     }
     
     /**
-     * Create a new motor with the name "Motor".
-     */
-    public Motor(){
-        this("Motor");
-    }
-    
-    /**
      * Set the value of the motor.
      * @param v 
      */

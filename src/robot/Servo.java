@@ -13,13 +13,6 @@ public class Servo {
     }
     
     /**
-     * Create a new motor with the name "Motor".
-     */
-    public Servo(){
-        this("Servo");
-    }
-    
-    /**
      * Set the value of the motor.
      * @param v 
      */
