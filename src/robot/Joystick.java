@@ -73,183 +73,187 @@ public class Joystick {
         }
 
         if(ident == Component.Identifier.Button._2){
-            button[0] = pressed;
+            button[2] = pressed;
         } else {
-            button[0] = false;
+            button[2] = false;
         }
 
         if(ident == Component.Identifier.Button._3){
-            button[0] = pressed;
+            button[3] = pressed;
         } else {
-            button[0] = false;
+            button[3] = false;
         }
 
         if(ident == Component.Identifier.Button._4){
-            button[0] = pressed;
+            button[4] = pressed;
         } else {
-            button[0] = false;
+            button[4] = false;
         }
 
         if(ident == Component.Identifier.Button._5){
-            button[0] = pressed;
+            button[5] = pressed;
         } else {
-            button[0] = false;
+            button[5] = false;
         }
 
         if(ident == Component.Identifier.Button._6){
-            button[0] = pressed;
+            button[6] = pressed;
         } else {
-            button[0] = false;
+            button[6] = false;
         }
 
         if(ident == Component.Identifier.Button._7){
-            button[0] = pressed;
+            button[7] = pressed;
         } else {
-            button[0] = false;
+            button[7] = false;
         }
 
         if(ident == Component.Identifier.Button._8){
-            button[0] = pressed;
+            button[8] = pressed;
         } else {
-            button[0] = false;
+            button[8] = false;
         }
 
         if(ident == Component.Identifier.Button._9){
-            button[0] = pressed;
+            button[9] = pressed;
         } else {
-            button[0] = false;
+            button[9] = false;
         }
 
         if(ident == Component.Identifier.Button._10){
-            button[0] = pressed;
+            button[10] = pressed;
         } else {
-            button[0] = false;
+            button[10] = false;
         }
 
         if(ident == Component.Identifier.Button._11){
-            button[0] = pressed;
+            button[11] = pressed;
         } else {
-            button[0] = false;
+            button[11] = false;
         }
 
         if(ident == Component.Identifier.Button._12){
-            button[0] = pressed;
+            button[12] = pressed;
         } else {
-            button[0] = false;
+            button[12] = false;
         }
 
         if(ident == Component.Identifier.Button._13){
-            button[0] = pressed;
+            button[13] = pressed;
         } else {
-            button[0] = false;
+            button[13] = false;
         }
 
         if(ident == Component.Identifier.Button._14){
-            button[0] = pressed;
+            button[14] = pressed;
         } else {
-            button[0] = false;
+            button[14] = false;
         }
 
         if(ident == Component.Identifier.Button._15){
-            button[0] = pressed;
+            button[15] = pressed;
         } else {
-            button[0] = false;
+            button[15] = false;
         }
 
         if(ident == Component.Identifier.Button._16){
-            button[0] = pressed;
+            button[16] = pressed;
         } else {
-            button[0] = false;
+            button[16] = false;
         }
 
         if(ident == Component.Identifier.Button._17){
-            button[0] = pressed;
+            button[17] = pressed;
         } else {
-            button[0] = false;
+            button[17] = false;
         }
 
         if(ident == Component.Identifier.Button._18){
-            button[0] = pressed;
+            button[18] = pressed;
         } else {
-            button[0] = false;
+            button[18] = false;
         }
 
         if(ident == Component.Identifier.Button._19){
-            button[0] = pressed;
+            button[19] = pressed;
         } else {
-            button[0] = false;
+            button[19] = false;
         }
 
         if(ident == Component.Identifier.Button._20){
-            button[0] = pressed;
+            button[20] = pressed;
         } else {
-            button[0] = false;
+            button[20] = false;
         }
 
         if(ident == Component.Identifier.Button._21){
-            button[0] = pressed;
+            button[21] = pressed;
         } else {
-            button[0] = false;
+            button[21] = false;
         }
 
         if(ident == Component.Identifier.Button._22){
-            button[0] = pressed;
+            button[22] = pressed;
         } else {
-            button[0] = false;
+            button[22] = false;
         }
 
         if(ident == Component.Identifier.Button._23){
-            button[0] = pressed;
+            button[23] = pressed;
         } else {
-            button[0] = false;
+            button[23] = false;
         }
 
         if(ident == Component.Identifier.Button._24){
-            button[0] = pressed;
+            button[24] = pressed;
         } else {
-            button[0] = false;
+            button[24] = false;
         }
 
         if(ident == Component.Identifier.Button._25){
-            button[0] = pressed;
+            button[25] = pressed;
         } else {
-            button[0] = false;
+            button[25] = false;
         }
 
         if(ident == Component.Identifier.Button._26){
-            button[0] = pressed;
+            button[26] = pressed;
         } else {
-            button[0] = false;
+            button[26] = false;
         }
 
         if(ident == Component.Identifier.Button._27){
-            button[0] = pressed;
+            button[27] = pressed;
         } else {
-            button[0] = false;
+            button[27] = false;
         }
 
         if(ident == Component.Identifier.Button._28){
-            button[0] = pressed;
+            button[28] = pressed;
         } else {
-            button[0] = false;
+            button[28] = false;
         }
 
         if(ident == Component.Identifier.Button._29){
-            button[0] = pressed;
+            button[29] = pressed;
         } else {
-            button[0] = false;
+            button[29] = false;
         }
 
         if(ident == Component.Identifier.Button._30){
-            button[0] = pressed;
+            button[30] = pressed;
         } else {
-            button[0] = false;
+            button[30] = false;
         }
 
         if(ident == Component.Identifier.Button._31){
-            button[0] = pressed;
+            button[31] = pressed;
         } else {
-            button[0] = false;
+            button[31] = false;
         }
+    }
+    
+    private void fetchHatSwitch(){
+        
     }
 }

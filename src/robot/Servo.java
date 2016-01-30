@@ -1,6 +1,6 @@
 package robot;
 
-public class Servo {
+public class Servo implements MotorServo{
     private String name;
     private float value;
     
