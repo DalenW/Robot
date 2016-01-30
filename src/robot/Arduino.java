@@ -14,6 +14,7 @@ public class Arduino {
     private String com = "";
     private String name;
     private boolean connected = false;
+    private Log log;
     
     private static CommPortIdentifier portID;
     private static SerialPort port;
@@ -28,6 +29,7 @@ public class Arduino {
     public Arduino(String n, String c){
         name = n;
         com = c;
+        log = new Log(name);
         connect();
     }
     
@@ -46,12 +48,15 @@ public class Arduino {
             
         } catch (NoSuchPortException ex) {
             connected = false;
+            log.Error("Couldn't find the Arduino " + name + ".");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (PortInUseException ex) {
             connected = false;
+            log.Error("Something else is already using the Arduino " + name + ".");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             connected = false;
+            log.Error("Io Exception when connecting to the Arduino " + name + ".");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
             port.close();
         }
@@ -77,6 +82,7 @@ public class Arduino {
             try {
                 portOutStream.write(write.getBytes());
             } catch (IOException ex) {
+                log.Error("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
             }
         }

@@ -10,6 +10,7 @@ import net.java.games.input.ControllerEnvironment;
 public class Joystick {
     private String name;
     private boolean connected = false;
+    private Log log;
     
     private Controller[] device;
     private Controller controller;
@@ -27,7 +28,18 @@ public class Joystick {
      */
     public Joystick(String n){
         name = n;
+        log = new Log(name);
+        connect();
+    }
+    
+    /**
+     * Connect to the joystick. Gets run automatically when you create a new joystick.
+     */
+    public void connect(){
+        //System.out.println("Connecting to joystick");
         device  = ControllerEnvironment.getDefaultEnvironment().getControllers();
+        
+        log.write("Connecting to the joystick.");
         
         for(int i = 0; i < device.length; i++){
             if(device[i].getName().equals(name)){
@@ -37,14 +49,19 @@ public class Joystick {
                 break;
             }
         }
-        loop();
+        if(connected){
+            log.write("Found the joystick.");
+            loop();
+        } else {
+           log.Error("Couldn't find the joystick " + name + ".");
+        }
     }
-    
     private void loop(){
         new Thread(){
             public void run(){
                 while(true){
                     if(!controller.poll()){
+                        log.Error("Disconnected from " + name + ".");
                         break;
                     }
                     bind();

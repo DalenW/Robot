@@ -19,7 +19,7 @@ public class Log {
      * @param n 
      */
     public Log(String n){
-        logFile = new File("logs\\" + n + ".txt");
+        logFile = new File("Logs/" + n + ".txt");
         logFile.getParentFile().mkdirs();
         try {
             log = new PrintWriter(logFile, "UTF-8");
@@ -36,10 +36,13 @@ public class Log {
      * @param s 
      */
     public void write(String s){
-        log.println(date() + " " + time() + "::" + millis() + "--> " + s);
+        log.println(date() + " " + time() + "::" + millis() + " --> " + s);
         log.flush();
     }
     
+    public void Error(String e){
+        Error er = new Error(this, e);
+    }
     private String date(){
         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
         Date date = new Date();
