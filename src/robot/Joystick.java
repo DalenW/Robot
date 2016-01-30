@@ -1,5 +1,7 @@
 package robot;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.java.games.input.Component;
 import net.java.games.input.Component.Identifier;
 import net.java.games.input.Controller;
@@ -14,6 +16,8 @@ public class Joystick {
     private Component[] components;
     private Component joystick;
     private Identifier ident;
+    
+    private float x, y, z, slider, rotation;
     
     private boolean[] button = new boolean[32];
     
@@ -33,7 +37,26 @@ public class Joystick {
                 break;
             }
         }
-        
+        loop();
+    }
+    
+    private void loop(){
+        new Thread(){
+            public void run(){
+                while(true){
+                    if(!controller.poll()){
+                        break;
+                    }
+                    bind();
+                    
+                    try {
+                        Thread.sleep(16);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }.start();
     }
     
     private void bind(){
@@ -51,11 +74,14 @@ public class Joystick {
                 } else {
                     pressed = true;
                     fetchButtons(pressed);
-                }
-                
-                
-                
+                }  
             }
+            
+            //hat switch
+            fetchHatSwitch();
+            
+            //axis
+            fetchAxis();
         }
     }
     
@@ -255,5 +281,88 @@ public class Joystick {
     
     private void fetchHatSwitch(){
         
+    }
+    
+    private void fetchAxis(){
+        if(joystick.isAnalog()){
+            float axis = joystick.getPollData();
+            
+            if(ident == Component.Identifier.Axis.X){
+                x = axis;
+            }
+            
+            if(ident == Component.Identifier.Axis.Y){
+                y = axis;
+            }
+            
+            if(ident == Component.Identifier.Axis.Z){
+                z = axis;
+            }
+            
+            if(ident == Component.Identifier.Axis.SLIDER){
+                slider = axis;
+            }
+            
+            if(joystick.getName().equals("Z Rotation")){
+                rotation = axis;
+            }
+        }
+    }
+    
+    /**
+     * Returns the array of button values.
+     * @return 
+     */
+    public boolean[] getButtonArray(){
+        return button;
+    }
+    
+    /**
+     * Returns the button value of index i
+     * @param i
+     * @return 
+     */
+    public boolean getButton(int i){
+        return button[i];
+    }
+    
+    /**
+     * Returns x.
+     * @return 
+     */
+    public float getX(){
+        return x;
+    }
+    
+    /**
+     * Returns y.
+     * @return 
+     */
+    public float getY(){
+        return y;
+    }
+    
+    /**
+     * Returns z.
+     * @return 
+     */
+    public float getZ(){
+        return z;
+    }
+    
+    /**
+     * Returns rotation.
+     * @return 
+     */
+    public float getRotation(){
+        return rotation;
+    }
+    
+    /**
+     * Returns slider.
+     * @return 
+     */
+    public float getSlider(){
+        return slider;
     }
 }
