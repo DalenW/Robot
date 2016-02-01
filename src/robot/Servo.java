@@ -23,6 +23,7 @@ public class Servo {
             v = 180;
         }
         value = v;
+        //log.write("Set the value to " + value + ".");
     }
     
     /**

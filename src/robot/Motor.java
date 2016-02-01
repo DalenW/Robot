@@ -20,6 +20,7 @@ public class Motor{
      */
     public void setValue(float v){
         value = v;
+        //log.write("Set the value to " + getValueInt() + ".");
     }
     
     /**

@@ -19,8 +19,9 @@ public class main {
         Servo s1 = new Servo("Servo 1");
         
         s1.setValue(180);
-        System.out.println(s1.getValueHex());
-        System.out.println(getOutput(s1.getValueHex()));
+        m1.setValue(0);
+        System.out.println(m1.getValueHex());
+        System.out.println(getOutput(s1.getValueHex() + m1.getValueHex()));
         
         while(true){
             //a.write(s1.getValueHex() + m1.getValueHex());
