@@ -15,9 +15,6 @@ public class Arduino {
     private String name;
     private boolean connected = false;
     private Log log;
-    private Motor[] motor;
-    private Servo[] servo;
-    private String hexRest = "";
     
     private static CommPortIdentifier portID;
     private static SerialPort port;
@@ -31,21 +28,11 @@ public class Arduino {
      * @param m = # of motors
      * @param s = # of servos
      */
-    public Arduino(String n, String c, int m, int s){
+    public Arduino(String n, String c){
         name = n;
         com = c;
         log = new Log(name);
-        motor = new Motor[m];
-        servo = new Servo[s];
         
-        int ms = m + s;
-        if(ms > 12){
-            log.crtError("More than 12 motors/servos.");
-        } else {
-            for(int i = ms; i < 12; i++){
-                hexRest += "00";
-            }
-        }
         connect();
     }
     
@@ -53,6 +40,7 @@ public class Arduino {
      * Connect to the Arduino.
      */
     public void connect(){
+        log.write("Connecting to the Arduino.");
         try {
             portID = CommPortIdentifier.getPortIdentifier(com);
             port = (SerialPort)portID.open(name, 9600);
@@ -61,7 +49,7 @@ public class Arduino {
             portInStream = port.getInputStream();
             
             connected = true;
-            
+            log.write("Connected.");
         } catch (NoSuchPortException ex) {
             connected = false;
             log.crtError("Couldn't find the Arduino " + name + ".");
@@ -83,10 +71,10 @@ public class Arduino {
      * @param m array of motors.
      * @param s array of servos.
      */
-    public void write(){
+    public void write(String s){
         if(connected){
             try {
-                portOutStream.write(getWrite().getBytes());
+                portOutStream.write(getOutput(s).getBytes());
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -100,6 +88,7 @@ public class Arduino {
      */
     public void setCOM(String c){
         com = c;
+        log.write("Changed the COM port to " + com + ".");
         connect();
     }
     
@@ -119,35 +108,17 @@ public class Arduino {
         return name;
     }
     
-    /**
-     * Set the motor array.
-     * @param m 
-     */
-    public void setMotors(Motor[] m){
-        motor = m;
-    }
-    
-    /**
-     * Set the servo array. 
-     * @param s 
-     */
-    public void setServos(Servo[] s){
-        servo = s;
-    }
-    
-    public String getWrite(){
-        String write = "";
-            
-        for(int i = 0; i < motor.length; i++){
-            write += motor[i].getValueHex();
-        }
-
-        for(int i = 0; i < servo.length; i++){
-            write += servo[i].getValueHex();
-        }
-
-        write += hexRest;
+    public String getOutput(String s){
+        int r = 24 - s.length();
+        String write = s;
         
+        if(r > 0 && r < 25){
+            for(int i = 0; i < r; i++){
+                write += "0";
+            }
+        } else { 
+            log.crtError("To many motors and servos.");
+        }
         return write;
     }
 }

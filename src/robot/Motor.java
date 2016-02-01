@@ -62,7 +62,7 @@ public class Motor{
         } else if(h.length() > 2){
             log.Error("Hexidecimal value is too high.");
         }
-        return h;
+        return h.toUpperCase();
     }
     
     /**

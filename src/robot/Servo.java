@@ -59,11 +59,11 @@ public class Servo {
         String h = Integer.toHexString(value);
         
         if(h.length() < 2){
-            //h = "0" + h;
+            h = "0" + h;
         } else if(h.length() > 2){
             log.Error("Hexidecimal value is too high.");
         }
-        return h;
+        return h.toUpperCase();
     }
     
     /**
