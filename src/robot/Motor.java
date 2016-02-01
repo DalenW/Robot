@@ -1,8 +1,9 @@
 package robot;
 
-public class Motor implements MotorServo{
+public class Motor{
     private String name;
     private float value;
+    private Log log;
     
     /**
      * Create a new motor with the name n.
@@ -10,6 +11,7 @@ public class Motor implements MotorServo{
      */
     public Motor(String n){
         name = n;
+        log = new Log(name);
     }
     
     /**
@@ -29,7 +31,7 @@ public class Motor implements MotorServo{
     }
     
     /**
-     * Returns the value as an int between 0 - 100.
+     * Returns the value as an int between 100 - 100.
      * @return 
      */
     public int getValueInt(){
@@ -37,7 +39,7 @@ public class Motor implements MotorServo{
     }
     
     /**
-     * Returns the value as a double between 0 - 100.
+     * Returns the value as a double between -100 - 100.
      * @return 
      */
     public double getValueDouble(){
@@ -45,17 +47,20 @@ public class Motor implements MotorServo{
     }
     
     /**
-     * Return the value as a Hexadecimal.
+     * Return the pwm value as a Hexadecimal.
      * @return 
      */
     public String getValueHex(){
-        int i = (int) (value*250);
-        String h = Integer.toHexString(this.getValueInt());
+        log.write(Integer.toString(getValueInt()));
+        
+        int i = getValueInt();
+        i += 100;
+        String h = Integer.toHexString(i);
         
         if(h.length() < 2){
             h = "0" + h;
         } else if(h.length() > 2){
-            
+            log.Error("Hexidecimal value is too high.");
         }
         return h;
     }

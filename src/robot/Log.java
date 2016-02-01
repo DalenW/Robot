@@ -41,7 +41,16 @@ public class Log {
     }
     
     public void Error(String e){
-        Error er = new Error(this, e);
+        write(logError(e));
+    }
+    
+    public void crtError(String e){
+        Error(e);
+        Error er = new Error(e);
+    }
+    
+    private String logError(String s){
+        return "ERROR: " + s;
     }
     private String date(){
         DateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");

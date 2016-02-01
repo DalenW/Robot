@@ -33,9 +33,9 @@ public class Joystick {
     }
     
     /**
-     * Connect to the joystick. Gets run automatically when you create a new joystick.
+     * Connect to the joystick. 
      */
-    public void connect(){
+    private void connect(){
         //System.out.println("Connecting to joystick");
         device  = ControllerEnvironment.getDefaultEnvironment().getControllers();
         
@@ -53,15 +53,16 @@ public class Joystick {
             log.write("Found the joystick.");
             loop();
         } else {
-           log.Error("Couldn't find the joystick " + name + ".");
+           log.crtError("Couldn't find the joystick " + name + ".");
         }
     }
+    
     private void loop(){
         new Thread(){
             public void run(){
                 while(true){
                     if(!controller.poll()){
-                        log.Error("Disconnected from " + name + ".");
+                        log.crtError("Disconnected from " + name + ".");
                         break;
                     }
                     bind();
@@ -381,5 +382,12 @@ public class Joystick {
      */
     public float getSlider(){
         return slider;
+    }
+    
+    /**
+     * Reconnect to the joystick.
+     */
+    public void reconnect(){
+        connect();
     }
 }
