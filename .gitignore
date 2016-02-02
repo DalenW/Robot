@@ -6,6 +6,7 @@ build.xml
 build/
 manifest.mf
 Logs/
+dist/Logs/
 
 
 
@@ -204,7 +205,6 @@ $RECYCLE.BIN/
 # Packages
 *.egg
 *.egg-info
-dist/
 build/
 eggs/
 parts/
