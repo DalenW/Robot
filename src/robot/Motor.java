@@ -81,4 +81,10 @@ public class Motor{
     public String getName(){
         return name;
     }
+    
+    @Override
+    public String toString(){
+        return "Motor" + 
+                "\n Name: " + name;
+    }
 }

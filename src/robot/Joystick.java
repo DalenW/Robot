@@ -29,7 +29,6 @@ public class Joystick {
     public Joystick(String n){
         name = n;
         log = new Log(name);
-        connect();
     }
     
     /**
@@ -389,5 +388,11 @@ public class Joystick {
      */
     public void reconnect(){
         connect();
+    }
+    
+    @Override
+    public String toString(){
+        return "Joystick" +
+                "\n Name : " + name;
     }
 }

@@ -13,13 +13,15 @@ import java.util.logging.Logger;
 public class Log {
     private PrintWriter log;
     private File logFile;
+    private String name;
     
     /**
      * Create a new log. n is the name of the file. 
      * @param n 
      */
     public Log(String n){
-        logFile = new File("Logs/" + n + ".txt");
+        name = n;
+        logFile = new File("Logs/" + name + ".txt");
         logFile.getParentFile().mkdirs();
         try {
             log = new PrintWriter(logFile, "UTF-8");
@@ -75,5 +77,13 @@ public class Log {
      */
     public File getFile(){
         return logFile;
+    }
+    
+    @Override
+    public String toString(){
+        return "Log" +
+                "\n Name: " + name +
+                "\n Path: " + logFile.getPath();
+                
     }
 }

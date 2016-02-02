@@ -32,8 +32,6 @@ public class Arduino {
         name = n;
         com = c;
         log = new Log(name);
-        
-        connect();
     }
     
     /**
@@ -108,6 +106,11 @@ public class Arduino {
         return name;
     }
     
+    /**
+     * Returns the hex output being sent to the arduino. 
+     * @param s
+     * @return 
+     */
     public String getOutput(String s){
         int r = 24 - s.length();
         String write = s;
@@ -120,5 +123,12 @@ public class Arduino {
             log.crtError("To many motors and servos.");
         }
         return write;
+    }
+    
+    @Override
+    public String toString(){
+        return "Arduino " + 
+                "\n Name: " + name +
+                "\n COM Port: " + com;
     }
 }
