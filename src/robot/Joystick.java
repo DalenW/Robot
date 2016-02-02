@@ -394,5 +394,6 @@ public class Joystick {
     public String toString(){
         return "Joystick" +
                 "\n Name : " + name;
+        
     }
 }

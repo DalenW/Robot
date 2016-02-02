@@ -11,41 +11,43 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Arduino {
+
     private String com = "";
     private String name;
     private boolean connected = false;
     private Log log;
-    
+
     private static CommPortIdentifier portID;
     private static SerialPort port;
     private static OutputStream portOutStream;
     private static InputStream portInStream;
-    
+
     /**
      * Add an Arduino
+     *
      * @param n = Arduino name
      * @param c = COM port
      * @param m = # of motors
      * @param s = # of servos
      */
-    public Arduino(String n, String c){
+    public Arduino(String n, String c) {
         name = n;
         com = c;
         log = new Log(name);
     }
-    
+
     /**
      * Connect to the Arduino.
      */
-    public void connect(){
+    public void connect() {
         log.write("Connecting to the Arduino.");
         try {
             portID = CommPortIdentifier.getPortIdentifier(com);
-            port = (SerialPort)portID.open(name, 9600);
-            
+            port = (SerialPort) portID.open(name, 9600);
+
             portOutStream = port.getOutputStream();
             portInStream = port.getInputStream();
-            
+
             connected = true;
             log.write("Connected.");
         } catch (NoSuchPortException ex) {
@@ -63,14 +65,15 @@ public class Arduino {
             port.close();
         }
     }
-    
+
     /**
-     * Write to the Arduino. 
+     * Write to the Arduino.
+     *
      * @param m array of motors.
      * @param s array of servos.
      */
-    public void write(String s){
-        if(connected){
+    public void write(String s) {
+        if (connected) {
             try {
                 portOutStream.write(getOutput(s).getBytes());
             } catch (IOException ex) {
@@ -79,56 +82,64 @@ public class Arduino {
             }
         }
     }
-    
+
     /**
-     * Set the COM port. Runs connect() after. 
-     * @param c 
+     * Set the COM port. Runs connect() after.
+     *
+     * @param c
      */
-    public void setCOM(String c){
+    public void setCOM(String c) {
         com = c;
         log.write("Changed the COM port to " + com + ".");
         connect();
     }
-    
+
     /**
      * Returns the COM port.
-     * @return 
+     *
+     * @return
      */
-    public String getCOM(){
+    public String getCOM() {
         return com;
     }
-    
+
     /**
      * Returns the name of the Arduino.
-     * @return 
+     *
+     * @return
      */
-    public String getName(){
+    public String getName() {
         return name;
     }
-    
+
     /**
-     * Returns the hex output being sent to the arduino. 
+     * Returns the hex output being sent to the arduino.
+     *
      * @param s
-     * @return 
+     * @return
      */
-    public String getOutput(String s){
+    public String getOutput(String s) {
         int r = 24 - s.length();
         String write = s;
-        
-        if(r > 0 && r < 25){
-            for(int i = 0; i < r; i++){
+
+        if (r > 0 && r < 25) {
+            for (int i = 0; i < r; i++) {
                 write += "0";
             }
-        } else { 
+        } else {
             log.crtError("To many motors and servos.");
         }
         return write;
     }
-    
+
     @Override
-    public String toString(){
-        return "Arduino " + 
-                "\n Name: " + name +
-                "\n COM Port: " + com;
+    public String toString() {
+        return "Arduino "
+                + "\n Name: " + name
+                + "\n COM Port: " + com;
+    }
+
+    public void reconnect() {
+
     }
 }
