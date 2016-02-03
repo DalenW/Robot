@@ -140,6 +140,10 @@ public class Arduino {
     }
 
     public void reconnect() {
-
+        connect();
+    }
+    
+    public boolean isConnected(){
+        return connected;
     }
 }

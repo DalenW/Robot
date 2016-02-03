@@ -12,7 +12,9 @@ public class main {
         
         System.out.println("Starting");
         
-        //Arduino a = new Arduino("Arduino Uno", "COM3");
+        Arduino a = new Arduino("Arduino Uno", "COM4");
+        a.connect();
+        System.out.println("Connected: " + a.isConnected());
         
         Motor m1 = new Motor("Motor 1");
         Motor m2 = new Motor("Motor 2");
@@ -20,12 +22,12 @@ public class main {
         
         s1.setValue(180);
         m1.setValue(0);
-        System.out.println(m1.getValueHex());
-        System.out.println(getOutput(s1.getValueHex() + m1.getValueHex()));
+        System.out.println(s1.getValueHex());
+        System.out.println(getOutput(s1.getValueHex()));
         
-        while(true){
-            //a.write(s1.getValueHex() + m1.getValueHex());
-        }
+        
+        a.write(s1.getValueHex());
+        
     }
     
     public static String getOutput(String s){
