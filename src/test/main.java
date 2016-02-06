@@ -6,13 +6,13 @@ import robot.Motor;
 import robot.Servo;
 
 public class main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Console c = new Console();
         c.build(500, 500, "Robot Testing");
         
         System.out.println("Starting");
         
-        Arduino a = new Arduino("Arduino Uno", "COM4");
+        Arduino a = new Arduino("Arduino Uno", "COM3");
         a.connect();
         System.out.println("Connected: " + a.isConnected());
         
@@ -21,18 +21,22 @@ public class main {
         Servo s1 = new Servo("Servo 1");
         
         s1.setValue(180);
-        m1.setValue(0);
+        
         System.out.println(s1.getValueHex());
         System.out.println(getOutput(s1.getValueHex()));
         
-        
         a.write(s1.getValueHex());
+        
+        while(true){
+            a.write(s1.getValueHex());
+            //Thread.sleep(10);
+        }
         
     }
     
     public static String getOutput(String s){
         int r = 24 - s.length();
-        String write = s;
+        String write = 'T' + s;
         
         if(r > 0 && r < 25){
             for(int i = 0; i < r; i++){

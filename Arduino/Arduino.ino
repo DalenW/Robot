@@ -1,48 +1,56 @@
-#include <SoftwareSerial.h>
-
 #include <Servo.h>
+
+//(hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1])
 
 Servo s[12];
 
-char buffer[24];
+byte buffer[25];
 
-void setup(){
-  Serial.begin(9600);
-  
+void setup() {
   for(int i = 0; i < 12; i++){
-    s[i].attach(i+1);
-    //s[i].write(0); //issue?
+    s[i].attach(i+2);
+    //s[i].write(0);
   }
-  //s[0].write(0);
-  
- 
- 
-  //while(!Serial){}
-  
-  //s[0].write(180);
+
+  Serial.begin(9600);
 }
 
-void loop(){
-  s[0].write(180);
-  //Serial.write("h");
-
-  if(Serial.available() == -1){
-    //s[0].write(180);
-  }
-/*
-  while(Serial.available() > 24){
-    for(int i = 0; i < 24; i++){
-      buffer[i] = Serial.read();
+void loop() {
+  while(true){
+    while(Serial.available() == 25){
+      
+      for(int i = 0; i < 25; i++){
+        buffer[i] = Serial.read();
+      }
+      s[0].write(45);
+      if(buffer[0] == 'T'){
+        //Serial.println(buffer);
+        //Serial.println(180);
+        Serial.println("Here");
+        s[0].write(180);
+        /*
+        if((hex2dec(buffer[1]) * 16) + hex2dec(buffer[2]) == 180){
+          s[0].write(180);
+        }
+        */
+        
+        for(int i = 0; i < 12; i++){
+          int b = i * 2;
+          b = b+1;
+          Serial.println((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
+          //s[i].write((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
+        }
+        
+        
+        loop();
+      } else {
+        loop();
+      }
     }
-
-    Serial.write(buffer);
-
-    s[0].write(180);
   }
-  */
 }
 
-int hex2dec(char c) { //c is the character that was buffered
+int hex2dec(byte c) { //c is the character that was buffered
   if(c == '0'){
     return 0;
   } else if(c == '1'){
@@ -75,6 +83,7 @@ int hex2dec(char c) { //c is the character that was buffered
     return 14;    
   } else if(c == 'F'){
     return 15;    
+  } else {
+    return 0;
   }
 }
-

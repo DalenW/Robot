@@ -73,9 +73,11 @@ public class Arduino {
      * @param s array of servos.
      */
     public void write(String s) {
+        String w = getOutput(s);
+        w = w.toUpperCase();
         if (connected) {
             try {
-                portOutStream.write(getOutput(s).getBytes());
+                portOutStream.write(w.getBytes());
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -120,7 +122,7 @@ public class Arduino {
      */
     public String getOutput(String s) {
         int r = 24 - s.length();
-        String write = s;
+        String write = 'T' + s;
 
         if (r > 0 && r < 25) {
             for (int i = 0; i < r; i++) {
