@@ -23,30 +23,16 @@ public class main {
         s1.setValue(180);
         
         System.out.println(s1.getValueHex());
-        System.out.println(getOutput(s1.getValueHex()));
+        System.out.println(a.getOutput(s1.getValueHex()));
+        System.out.println(a.getOutput(s1.getValueHex()).getBytes());
         
         a.write(s1.getValueHex());
         
         while(true){
             a.write(s1.getValueHex());
-            //Thread.sleep(10);
+            //System.out.println(a.readLine());
+            Thread.sleep(10);
         }
         
     }
-    
-    public static String getOutput(String s){
-        int r = 24 - s.length();
-        String write = 'T' + s;
-        
-        if(r > 0 && r < 25){
-            for(int i = 0; i < r; i++){
-                write += "0";
-            }
-        } else { 
-            //log.crtError("To many motors and servos.");
-        }
-        return write;
-        
-    }
-
 }

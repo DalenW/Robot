@@ -6,7 +6,9 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -17,10 +19,11 @@ public class Arduino {
     private boolean connected = false;
     private Log log;
 
-    private static CommPortIdentifier portID;
-    private static SerialPort port;
-    private static OutputStream portOutStream;
-    private static InputStream portInStream;
+    private CommPortIdentifier portID;
+    private SerialPort port;
+    private OutputStream portOutStream;
+    private InputStream portInStream;
+    private BufferedReader input;
 
     /**
      * Add an Arduino
@@ -47,6 +50,8 @@ public class Arduino {
 
             portOutStream = port.getOutputStream();
             portInStream = port.getInputStream();
+            
+            input = new BufferedReader(new InputStreamReader(port.getInputStream()));
 
             connected = true;
             log.write("Connected.");
@@ -75,9 +80,13 @@ public class Arduino {
     public void write(String s) {
         String w = getOutput(s);
         w = w.toUpperCase();
-        if (connected) {
+        byte[] b = w.getBytes();
+        
+        if (connected && b.length == 25) {
             try {
-                portOutStream.write(w.getBytes());
+                //System.out.println(b);
+                portOutStream.write(b);
+                portOutStream.flush();
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -147,5 +156,15 @@ public class Arduino {
     
     public boolean isConnected(){
         return connected;
+    }
+    
+    public String readLine(){
+        try {
+            return input.readLine();
+        } catch (IOException ex) {
+            log.Error("Failed to read line from Arduino.");
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
     }
 }

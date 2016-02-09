@@ -4,7 +4,7 @@
 
 Servo s[12];
 
-byte buffer[25];
+char buffer[25];
 
 void setup() {
   for(int i = 0; i < 12; i++){
@@ -22,11 +22,16 @@ void loop() {
       for(int i = 0; i < 25; i++){
         buffer[i] = Serial.read();
       }
+      //Serial.println(buffer[0]);
       s[0].write(45);
-      if(buffer[0] == 'T'){
+
+      byte message = Serial.read();
+      
+      //char T = buffer[0];
+      if(message == 'T'){
         //Serial.println(buffer);
         //Serial.println(180);
-        Serial.println("Here");
+        //Serial.println("Here");
         s[0].write(180);
         /*
         if((hex2dec(buffer[1]) * 16) + hex2dec(buffer[2]) == 180){
@@ -37,8 +42,8 @@ void loop() {
         for(int i = 0; i < 12; i++){
           int b = i * 2;
           b = b+1;
-          Serial.println((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
-          //s[i].write((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
+          //Serial.println((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
+          s[i].write((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
         }
         
         
@@ -50,7 +55,7 @@ void loop() {
   }
 }
 
-int hex2dec(byte c) { //c is the character that was buffered
+int hex2dec(char c) { //c is the character that was buffered
   if(c == '0'){
     return 0;
   } else if(c == '1'){
