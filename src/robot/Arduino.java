@@ -32,18 +32,13 @@ public class Arduino {
      *
      * @param n = Arduino name
      * @param c = COM port
-     * @param m = # of motors
-     * @param s = # of servos
+     * @param r = communication rate
      */
     public Arduino(String n, String c, int r) {
         name = n;
         com = c;
         rate = r;
         log = new Log(name);
-    }
-    
-    public Arduino(String n, String c){
-        this(n, c, 9600);
     }
 
     /**
@@ -55,16 +50,12 @@ public class Arduino {
             portID = CommPortIdentifier.getPortIdentifier(com);
             
             port = (SerialPort) portID.open(name, rate);
-            
-            
-            
-            portOutStream = port.getOutputStream();
-            
+            openOutStream();
             port.setSerialPortParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             
-            Thread.sleep(4000);
+            Thread.sleep(100);
 
-            //input = new BufferedReader(new InputStreamReader(port.getInputStream()));
+            input = new BufferedReader(new InputStreamReader(port.getInputStream()));
 
             connected = true;
             log.write("Connected.");
@@ -76,14 +67,12 @@ public class Arduino {
             connected = false;
             log.crtError("Something else is already using the Arduino " + name + ".");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            connected = false;
-            log.crtError("Io Exception when connecting to the Arduino " + name + ".");
-            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
-            port.close();
         } catch (InterruptedException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedCommOperationException ex) {
+            log.crtError("Couldn't set port parameters.");
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -101,7 +90,7 @@ public class Arduino {
             try {
                 //System.out.println(b);
                 portOutStream.write(b);
-                portOutStream.flush();
+                //portOutStream.flush();
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -187,12 +176,29 @@ public class Arduino {
         return port.getBaudRate();
     }
     
-    public void closeStream(){
+    public void closeOutStream(){
         try {
+            log.write("Closing streams.");
             portOutStream.close();
             portInStream.close();
         } catch (IOException ex) {
+            log.crtError("Couldn't close streams.");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    public void openOutStream(){
+        try {
+            log.write("Opening the output stream.");
+            portOutStream = port.getOutputStream();
+        } catch (IOException ex) {
+            log.crtError("Couldn't open output stream.");
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void close(){
+        closeOutStream();
+        port.close();
     }
 }

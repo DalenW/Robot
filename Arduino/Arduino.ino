@@ -14,31 +14,13 @@ void setup() {
 
 void loop() {
   while(Serial.available() == 25){
-    s[0].write(45);
     Serial.readBytes(buffer, Serial.available());
     if(buffer[0] == 'T'){
-      s[0].write(0);
-      
-      //getBuffer();
-      
-      //s[0].write(45);
-
       for(int i = 0; i < 12; i++){
         int b = i * 2;
         b = b+1;
         s[i].write((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
       }
-    }
-  }
-  //s[0].write(135);
-}
-
-void getBuffer(){
-  for(int i = 0; i < 24; i++){
-    if(Serial.peek() == 'T'){
-      getBuffer();
-    } else {
-      buffer[i] = Serial.read();
     }
   }
 }

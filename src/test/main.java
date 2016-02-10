@@ -12,7 +12,7 @@ public class main {
         
         System.out.println("Starting");
         
-        Arduino a = new Arduino("Arduino Uno", "COM4", 115200);
+        Arduino a = new Arduino("Arduino Uno", "COM3", 115200);
         a.connect();
         System.out.println("Connected: " + a.isConnected());
         
