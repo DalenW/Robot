@@ -6,6 +6,7 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.NoSuchPortException;
 import gnu.io.PortInUseException;
 import gnu.io.SerialPort;
+import gnu.io.UnsupportedCommOperationException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -18,6 +19,7 @@ public class Arduino {
     private String name;
     private boolean connected = false;
     private Log log;
+    private int rate;
 
     private CommPortIdentifier portID;
     private SerialPort port;
@@ -33,10 +35,15 @@ public class Arduino {
      * @param m = # of motors
      * @param s = # of servos
      */
-    public Arduino(String n, String c) {
+    public Arduino(String n, String c, int r) {
         name = n;
         com = c;
+        rate = r;
         log = new Log(name);
+    }
+    
+    public Arduino(String n, String c){
+        this(n, c, 9600);
     }
 
     /**
@@ -46,12 +53,18 @@ public class Arduino {
         log.write("Connecting to the Arduino.");
         try {
             portID = CommPortIdentifier.getPortIdentifier(com);
-            port = (SerialPort) portID.open(name, 9600);
-
-            portOutStream = port.getOutputStream();
-            portInStream = port.getInputStream();
             
-            input = new BufferedReader(new InputStreamReader(port.getInputStream()));
+            port = (SerialPort) portID.open(name, rate);
+            
+            
+            
+            portOutStream = port.getOutputStream();
+            
+            port.setSerialPortParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
+            
+            Thread.sleep(4000);
+
+            //input = new BufferedReader(new InputStreamReader(port.getInputStream()));
 
             connected = true;
             log.write("Connected.");
@@ -68,21 +81,23 @@ public class Arduino {
             log.crtError("Io Exception when connecting to the Arduino " + name + ".");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
             port.close();
+        } catch (InterruptedException ex) {
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (UnsupportedCommOperationException ex) {
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     /**
      * Write to the Arduino.
-     *
-     * @param m array of motors.
-     * @param s array of servos.
+     * @param s
      */
     public void write(String s) {
-        String w = getOutput(s);
-        w = w.toUpperCase();
+        String w = getOutput(s).toUpperCase();
+        
         byte[] b = w.getBytes();
         
-        if (connected && b.length == 25) {
+        if(connected && b.length == 25) {
             try {
                 //System.out.println(b);
                 portOutStream.write(b);
@@ -166,5 +181,18 @@ public class Arduino {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+    
+    public int getRate(){
+        return port.getBaudRate();
+    }
+    
+    public void closeStream(){
+        try {
+            portOutStream.close();
+            portInStream.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

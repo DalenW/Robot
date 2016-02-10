@@ -12,26 +12,27 @@ public class main {
         
         System.out.println("Starting");
         
-        Arduino a = new Arduino("Arduino Uno", "COM3");
+        Arduino a = new Arduino("Arduino Uno", "COM4", 115200);
         a.connect();
         System.out.println("Connected: " + a.isConnected());
         
         Motor m1 = new Motor("Motor 1");
         Motor m2 = new Motor("Motor 2");
         Servo s1 = new Servo("Servo 1");
+        Servo s2 = new Servo("Servo 2");
         
         s1.setValue(180);
+        s2.setValue(45);
         
         System.out.println(s1.getValueHex());
         System.out.println(a.getOutput(s1.getValueHex()));
-        System.out.println(a.getOutput(s1.getValueHex()).getBytes());
+        //System.out.println(a.getOutput(s1.getValueHex()));
         
-        a.write(s1.getValueHex());
+        System.out.println(a.getRate());
         
         while(true){
             a.write(s1.getValueHex());
-            //System.out.println(a.readLine());
-            Thread.sleep(10);
+            Thread.sleep(15);
         }
         
     }
