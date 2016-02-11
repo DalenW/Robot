@@ -1,7 +1,10 @@
 package test;
 
+
+
 import com.ward.Console;
 import robot.Arduino;
+import robot.Joystick;
 import robot.Motor;
 import robot.Servo;
 
@@ -12,28 +15,11 @@ public class main {
         
         System.out.println("Starting");
         
-        Arduino a = new Arduino("Arduino Uno", "COM3", 115200);
-        a.connect();
-        System.out.println("Connected: " + a.isConnected());
-        
-        Motor m1 = new Motor("Motor 1");
-        Motor m2 = new Motor("Motor 2");
-        Servo s1 = new Servo("Servo 1");
-        Servo s2 = new Servo("Servo 2");
-        
-        s1.setValue(180);
-        s2.setValue(45);
-        
-        System.out.println(s1.getValueHex());
-        System.out.println(a.getOutput(s1.getValueHex()));
-        //System.out.println(a.getOutput(s1.getValueHex()));
-        
-        System.out.println(a.getRate());
-        
+        Joystick j = new Joystick("Logitech Extreme 3D");
+        j.connect();
         while(true){
-            a.write(s1.getValueHex());
-            Thread.sleep(15);
+            System.out.println("X: " + j.getX() + " Y: " + j.getY() + " R: " + j.getRotation());
+            Thread.sleep(50);
         }
-        
     }
 }

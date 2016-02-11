@@ -34,22 +34,27 @@ public class Joystick {
     /**
      * Connect to the joystick. 
      */
-    private void connect(){
+    public void connect(){
         //System.out.println("Connecting to joystick");
         device  = ControllerEnvironment.getDefaultEnvironment().getControllers();
         
         log.write("Connecting to the joystick.");
         
         for(int i = 0; i < device.length; i++){
+            log.write("Found a controller called " + device[i].getName() + ".");
             if(device[i].getName().equals(name)){
+                log.write("Found the joystick " + device[i].getName() + ".");
                 controller = device[i];
                 components = controller.getComponents();
                 connected = true;
-                break;
+                i = device.length;
             }
+            
         }
+        
         if(connected){
-            log.write("Found the joystick.");
+            
+            //log.write("Found the joystick.");
             loop();
         } else {
            log.crtError("Couldn't find the joystick " + name + ".");
@@ -57,11 +62,12 @@ public class Joystick {
     }
     
     private void loop(){
+        log.write("Beginning poll loop.");
         new Thread(){
             public void run(){
                 while(true){
                     if(!controller.poll()){
-                        log.crtError("Disconnected from " + name + ".");
+                        log.crtError("POLL: Disconnected from " + name + ".");
                         break;
                     }
                     bind();
@@ -74,6 +80,7 @@ public class Joystick {
                 }
             }
         }.start();
+        log.write("Succesfully created poll loop.");
     }
     
     private void bind(){
@@ -356,7 +363,7 @@ public class Joystick {
      * @return 
      */
     public float getY(){
-        return y;
+        return -y;
     }
     
     /**
