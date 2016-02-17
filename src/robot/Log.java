@@ -66,6 +66,10 @@ public class Log {
         return dateFormat.format(date);
     }
     
+    public String dateTime(){
+        return date() + " " + time();
+    }
+    
     private long millis(){
         long millis = System.currentTimeMillis() % 1000;
         return millis;

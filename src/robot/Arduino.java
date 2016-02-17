@@ -142,7 +142,7 @@ public class Arduino {
                 write += "0";
             }
         } else {
-            log.crtError("To many motors and servos.");
+            //log.crtError("To many motors and servos.");
         }
         return write;
     }
