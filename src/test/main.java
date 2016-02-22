@@ -16,10 +16,20 @@ public class main {
         System.out.println("Starting");
         
         Joystick j = new Joystick("Logitech Extreme 3D");
-        j.connect();
+        //j.connect();
+        
+        Arduino a = new Arduino("Arduino Uno", "COM4", 115200);
+        a.connect();
+        
+        Servo s1 = new Servo("Servo 1");
+        s1.setValue(0);
+        System.out.println("Writing");
+        System.out.println(a.getOutput(s1.getValueHex()));
         while(true){
-            System.out.println("X: " + j.getX() + " Y: " + j.getY() + " R: " + j.getRotation());
-            Thread.sleep(50);
+            
+            a.write(s1.getValueHex());
+            //System.out.println("X: " + j.getX() + " Y: " + j.getY() + " R: " + j.getRotation());
+            Thread.sleep(10);
         }
     }
 }

@@ -8,7 +8,6 @@ void setup() {
   for(int i = 0; i < 12; i++){
     s[i].attach(i+2);
   }
-
   Serial.begin(115200);
 }
 
@@ -20,9 +19,14 @@ void loop() {
         int b = i * 2;
         b = b+1;
         s[i].write((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
+        //s[i].writeMicroseconds(d2ms((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1])));
       }
     }
   }
+}
+
+int d2ms(int d){
+  return  1000 + (d * 150  + 13) / 27;
 }
 
 int hex2dec(char c) { //c is the character that was buffered
