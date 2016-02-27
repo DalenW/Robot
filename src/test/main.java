@@ -4,9 +4,6 @@ package test;
 
 import com.ward.Console;
 import robot.Arduino;
-import robot.Joystick;
-import robot.Motor;
-import robot.Servo;
 
 public class main {
     public static void main(String[] args) throws InterruptedException {
@@ -15,21 +12,10 @@ public class main {
         
         System.out.println("Starting");
         
-        Joystick j = new Joystick("Logitech Extreme 3D");
-        //j.connect();
         
-        Arduino a = new Arduino("Arduino Uno", "COM4", 115200);
-        a.connect();
+        Arduino a = new Arduino("Arduino Uno", "COM5", 115200);
+        a.connectW();
         
-        Servo s1 = new Servo("Servo 1");
-        s1.setValue(0);
-        System.out.println("Writing");
-        System.out.println(a.getOutput(s1.getValueHex()));
-        while(true){
-            
-            a.write(s1.getValueHex());
-            //System.out.println("X: " + j.getX() + " Y: " + j.getY() + " R: " + j.getRotation());
-            Thread.sleep(10);
-        }
+        System.out.println("Done");
     }
 }

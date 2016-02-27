@@ -1,15 +1,7 @@
 package robot;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-import gnu.io.CommPortIdentifier;
-import gnu.io.NoSuchPortException;
-import gnu.io.PortInUseException;
-import gnu.io.SerialPort;
-import gnu.io.UnsupportedCommOperationException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import gnu.io.*;
+import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -23,6 +15,7 @@ public class Arduino {
 
     private CommPortIdentifier portID;
     private SerialPort port;
+    private java.util.Enumeration<CommPortIdentifier> portEnum;
     private OutputStream portOutStream;
     private InputStream portInStream;
     private BufferedReader input;
@@ -44,11 +37,8 @@ public class Arduino {
     /**
      * Connect to the Arduino.
      */
-    public void connect() {
-        log.write("Connecting to the Arduino.");
+    private void connect(){
         try {
-            portID = CommPortIdentifier.getPortIdentifier(com);
-            
             port = (SerialPort) portID.open(name, rate);
             openOutStream();
             port.setSerialPortParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
@@ -59,10 +49,6 @@ public class Arduino {
 
             connected = true;
             log.write("Connected.");
-        } catch (NoSuchPortException ex) {
-            connected = false;
-            log.crtError("Couldn't find the Arduino " + name + ".");
-            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (PortInUseException ex) {
             connected = false;
             log.crtError("Something else is already using the Arduino " + name + ".");
@@ -75,6 +61,40 @@ public class Arduino {
         } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    /**
+     * Connect to the Arduino on windows
+     */
+    public void connectW(){
+        log.write("Connecting to the Arduino.");
+        portEnum = CommPortIdentifier.getPortIdentifiers();
+        
+        System.out.println("Listing port options");
+        System.out.println(portEnum.hasMoreElements());
+        
+        while(portEnum.hasMoreElements()){
+            System.out.println("1: ");
+            CommPortIdentifier cp = portEnum.nextElement();
+            System.out.println(cp.getName() + " - " + getPortTypeName(cp.getPortType()));
+        }
+        /*
+        try {
+            portID = CommPortIdentifier.getPortIdentifier(com);
+        } catch (NoSuchPortException ex) {
+            connected = false;
+            log.crtError("Couldn't find the Arduino " + name + ".");
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        */
+        //connect();
+    }
+    
+    /**
+     * Connect to the Arduino on mac
+     */
+    public void connectM(){
+        log.write("Connecting to the Arduino.");
     }
 
     /**
@@ -200,5 +220,22 @@ public class Arduino {
     public void close(){
         closeOutStream();
         port.close();
+    }
+    
+    private String getPortTypeName(int p){
+        switch(p){
+            case CommPortIdentifier.PORT_I2C:
+                return "I2C";
+            case CommPortIdentifier.PORT_PARALLEL:
+                return "Parallel";
+            case CommPortIdentifier.PORT_RAW:
+                return "Raw";
+            case CommPortIdentifier.PORT_RS485:
+                return "RS485";
+            case CommPortIdentifier.PORT_SERIAL:
+                return "Serial";
+            default:
+                return "unknown type";
+        }
     }
 }
