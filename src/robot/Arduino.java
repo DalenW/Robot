@@ -53,6 +53,7 @@ public class Arduino {
         try {
             port = (SerialPort) portID.open(this.getClass().getName(), rate);
             openOutStream();
+            openInStream();
             port.setSerialPortParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             
             Thread.sleep(100);
@@ -107,7 +108,8 @@ public class Arduino {
      * Connect to the Arduino on mac
      */
     private void connectM(){
-        log.write("Connecting to the Arduino.");
+        //log.write("Connecting to the Arduino.");
+        connectW();
     }
 
     /**
@@ -196,12 +198,6 @@ public class Arduino {
     }
     
     public String readLine(){
-        try {
-            return input.readLine();
-        } catch (IOException ex) {
-            log.Error("Failed to read line from Arduino.");
-            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
-        }
         return null;
     }
     
@@ -211,11 +207,10 @@ public class Arduino {
     
     public void closeOutStream(){
         try {
-            log.write("Closing streams.");
+            log.write("Closing the output stream.");
             portOutStream.close();
-            portInStream.close();
         } catch (IOException ex) {
-            log.crtError("Couldn't close streams.");
+            log.crtError("Couldn't close the output stream.");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
@@ -226,6 +221,20 @@ public class Arduino {
             portOutStream = port.getOutputStream();
         } catch (IOException ex) {
             log.crtError("Couldn't open output stream.");
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void openInStream(){
+        
+    }
+    
+    public void closeInStream(){
+        try {
+            log.write("Closing the input stream.");
+            portInStream.close();
+        } catch (IOException ex) {
+            log.crtError("Couldn't close the input stream.");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
     }

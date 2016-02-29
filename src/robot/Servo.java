@@ -4,6 +4,7 @@ public class Servo {
     private String name;
     private int value;
     private Log log;
+    //public final float max_value = 180; min_value = 0;
     
     /**
      * Create a new motor with the name n.

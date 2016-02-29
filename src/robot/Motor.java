@@ -4,6 +4,7 @@ public class Motor{
     private String name;
     private float value;
     private Log log;
+    public final float max_value = 1, min_value = -1;
     
     /**
      * Create a new motor with the name n.
