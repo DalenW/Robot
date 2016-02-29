@@ -2,18 +2,21 @@ package robot;
 
 import gnu.io.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 public class Arduino {
 
-    private String com = "";
+    private String com;
     private String name;
     private boolean connected = false;
     private Log log;
     private int rate;
     private String os;
-
+    private int comChoice = -1;
+    
     private CommPortIdentifier portID;
     private SerialPort port;
     private java.util.Enumeration<CommPortIdentifier> portEnum;
@@ -33,24 +36,63 @@ public class Arduino {
         rate = r;
         log = new Log(name);
     }
+    
+    public Arduino(String n, int r, String c){
+        this(n, r);
+        com = c;
+    }
 
     /**
      * Connect to the Arduino.
      */
     public void connect(){
-        os = System.getProperty("os.name").toLowerCase();
-        
-        //windows
-        if(os.substring(0, 1).equals("w")){
-            connectW();
-        } else if(os.substring(0, 1).equals("m")){
-            connectM();
-        } else {
-            log.crtError("Unsupported OS: " + os);
-        }
-        
+        log.write("Connecting to the Arduino.");
+        portEnum = CommPortIdentifier.getPortIdentifiers();
         
         try {
+            if(com == null){
+                log.write("Listing port options");
+                ArrayList<CommPortIdentifier> coms = new ArrayList();
+
+                if(portEnum.hasMoreElements()){
+                    while(portEnum.hasMoreElements()){
+                        CommPortIdentifier cp = portEnum.nextElement();
+                        log.write(cp.getName() + " - " + getPortTypeName(cp.getPortType()));
+
+                        if(cp.getPortType() == CommPortIdentifier.PORT_SERIAL){
+                            coms.add(cp);
+                        }
+                    }
+                } else {
+                    log.crtError("Couldn't find an Arduino.");
+                }
+
+                if(coms.size() > 1){
+                    log.crtError("More than one serial interface detected.");
+                    //log.write("Make sure that itunes is completly shutdown. ");
+
+                    String message = "Select the com port that you want. If your not sure check devices and printers.";
+                    for(int i = 1; i < coms.size() + 1; i++){
+                        message += "\n " + i + ": " + coms.get(i-1).getName();
+                    }
+
+                    if(comChoice == -1){
+                        comChoice = Integer.parseInt(JOptionPane.showInputDialog(message));
+                        log.write("\n\n" + message);
+                        log.write("Selected " + comChoice);
+                        portID = CommPortIdentifier.getPortIdentifier(coms.get(comChoice - 1).getName());
+                        com = portID.getName();
+                    } else { 
+                    }
+
+                } else {
+                    portID = coms.get(0);
+                    com = portID.getName();
+                }
+            } else {
+                portID = CommPortIdentifier.getPortIdentifier(com);
+            }
+            
             port = (SerialPort) portID.open(this.getClass().getName(), rate);
             openOutStream();
             openInStream();
@@ -62,6 +104,7 @@ public class Arduino {
 
             connected = true;
             log.write("Connected.");
+            log.write("\n\n" + this.toString());
         } catch (InterruptedException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedCommOperationException ex) {
@@ -72,46 +115,21 @@ public class Arduino {
         } catch (PortInUseException ex) {
             log.crtError("Something else is using " + name + ".");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (NoSuchPortException ex) {
+            log.crtError("Couldn't connect to the " + name + " on port " + com + ".");
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+    /*
     /**
-     * Connect to the Arduino on windows
-     */
-    private void connectW(){
-        log.write("Connecting to the Arduino.");
-        portEnum = CommPortIdentifier.getPortIdentifiers();
-        
-        log.write("Listing port options");
-        int x = 0;
-        if(portEnum.hasMoreElements()){
-            while(portEnum.hasMoreElements()){
-                CommPortIdentifier cp = portEnum.nextElement();
-                log.write(cp.getName() + " - " + getPortTypeName(cp.getPortType()));
-                
-                if(cp.getPortType() == CommPortIdentifier.PORT_SERIAL){
-                    portID = cp;
-                    com = portID.getName();
-                    x++;
-                }
-            }
-        } else {
-            log.crtError("Couldn't find an Arduino.");
-        }
-        
-        if(x > 1){
-            log.crtError("More than one serial interface detected.");
-        }
+     * Connect with a specified com choice. 
+     * @param c 
+     *
+    public void connect(int c){
+        comChoice = c;
+        connect();
     }
-    
-    /**
-     * Connect to the Arduino on mac
-     */
-    private void connectM(){
-        //log.write("Connecting to the Arduino.");
-        connectW();
-    }
-
+    */
     /**
      * Write to the Arduino.
      * @param s
@@ -186,7 +204,8 @@ public class Arduino {
     public String toString() {
         return "Arduino "
                 + "\n Name: " + name
-                + "\n COM Port: " + com;
+                + "\n COM Port: " + com
+                + "\n Rate: " + rate;
     }
 
     public void reconnect() {
