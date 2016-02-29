@@ -12,6 +12,7 @@ public class Arduino {
     private boolean connected = false;
     private Log log;
     private int rate;
+    private String os;
 
     private CommPortIdentifier portID;
     private SerialPort port;
@@ -27,9 +28,8 @@ public class Arduino {
      * @param c = COM port
      * @param r = communication rate
      */
-    public Arduino(String n, String c, int r) {
+    public Arduino(String n, int r) {
         name = n;
-        com = c;
         rate = r;
         log = new Log(name);
     }
@@ -37,9 +37,21 @@ public class Arduino {
     /**
      * Connect to the Arduino.
      */
-    private void connect(){
+    public void connect(){
+        os = System.getProperty("os.name").toLowerCase();
+        
+        //windows
+        if(os.substring(0, 1).equals("w")){
+            connectW();
+        } else if(os.substring(0, 1).equals("m")){
+            connectM();
+        } else {
+            log.crtError("Unsupported OS: " + os);
+        }
+        
+        
         try {
-            port = (SerialPort) portID.open(name, rate);
+            port = (SerialPort) portID.open(this.getClass().getName(), rate);
             openOutStream();
             port.setSerialPortParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
             
@@ -49,10 +61,6 @@ public class Arduino {
 
             connected = true;
             log.write("Connected.");
-        } catch (PortInUseException ex) {
-            connected = false;
-            log.crtError("Something else is already using the Arduino " + name + ".");
-            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InterruptedException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedCommOperationException ex) {
@@ -60,40 +68,45 @@ public class Arduino {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (PortInUseException ex) {
+            log.crtError("Something else is using " + name + ".");
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
     
     /**
      * Connect to the Arduino on windows
      */
-    public void connectW(){
+    private void connectW(){
         log.write("Connecting to the Arduino.");
         portEnum = CommPortIdentifier.getPortIdentifiers();
         
-        System.out.println("Listing port options");
-        System.out.println(portEnum.hasMoreElements());
+        log.write("Listing port options");
+        int x = 0;
+        if(portEnum.hasMoreElements()){
+            while(portEnum.hasMoreElements()){
+                CommPortIdentifier cp = portEnum.nextElement();
+                log.write(cp.getName() + " - " + getPortTypeName(cp.getPortType()));
+                
+                if(cp.getPortType() == CommPortIdentifier.PORT_SERIAL){
+                    portID = cp;
+                    com = portID.getName();
+                    x++;
+                }
+            }
+        } else {
+            log.crtError("Couldn't find an Arduino.");
+        }
         
-        while(portEnum.hasMoreElements()){
-            System.out.println("1: ");
-            CommPortIdentifier cp = portEnum.nextElement();
-            System.out.println(cp.getName() + " - " + getPortTypeName(cp.getPortType()));
+        if(x > 1){
+            log.crtError("More than one serial interface detected.");
         }
-        /*
-        try {
-            portID = CommPortIdentifier.getPortIdentifier(com);
-        } catch (NoSuchPortException ex) {
-            connected = false;
-            log.crtError("Couldn't find the Arduino " + name + ".");
-            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        */
-        //connect();
     }
     
     /**
      * Connect to the Arduino on mac
      */
-    public void connectM(){
+    private void connectM(){
         log.write("Connecting to the Arduino.");
     }
 
@@ -237,5 +250,13 @@ public class Arduino {
             default:
                 return "unknown type";
         }
+    }
+    
+    /**
+     * Returns the OS you connected to the arduino on
+     * @return 
+     */
+    public String getOS(){
+        return os;
     }
 }
