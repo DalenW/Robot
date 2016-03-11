@@ -258,39 +258,39 @@ public class Joystick {
         }
         
         //neutral
-        if(hatswitch == 0.0){
+        if(hatswitch == Component.POV.CENTER){
             hatSwitchArr[0] = true;
         }
         //north
-        if(hatswitch == 0.25){
+        if(hatswitch == Component.POV.UP){
             hatSwitchArr[1] = true;
         }
         //northeast
-        if(hatswitch == 0.375){
+        if(hatswitch == Component.POV.UP_RIGHT){
             hatSwitchArr[2] = true;
         }
         //east
-        if(hatswitch == 0.5){
+        if(hatswitch == Component.POV.RIGHT){
             hatSwitchArr[3] = true;
         }
         //southeast
-        if(hatswitch == 0.625){
+        if(hatswitch == Component.POV.DOWN_RIGHT){
             hatSwitchArr[4] = true;
         }
         //south
-        if(hatswitch == 0.75){
+        if(hatswitch == Component.POV.DOWN){
             hatSwitchArr[5] = true;
         }
         //southwest
-        if(hatswitch == 0.875){
+        if(hatswitch == Component.POV.DOWN_LEFT){
             hatSwitchArr[6] = true;
         }
         //west
-        if(hatswitch == 1.0){
+        if(hatswitch == Component.POV.LEFT){
             hatSwitchArr[7] = true;
         }
         //northwest
-        if(hatswitch == 0.125){
+        if(hatswitch == Component.POV.UP_LEFT){
             hatSwitchArr[8] = true;
         }
                 
