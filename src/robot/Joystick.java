@@ -9,7 +9,7 @@ import net.java.games.input.ControllerEnvironment;
 
 public class Joystick {
     private String name;
-    private boolean connected = false;
+    private boolean connected = false, wasConnected = false;
     private Log log;
     
     private Controller[] device;
@@ -18,9 +18,10 @@ public class Joystick {
     private Component joystick;
     private Identifier ident;
     
-    private float x, y, z, slider, rotation;
+    private float x, y, z, slider, rotation, hatswitch;
     
     private boolean[] button = new boolean[32];
+    private boolean[] hatSwitchArr = new boolean[9];
     
     /**
      * Connect to the joystick with name n.
@@ -53,9 +54,17 @@ public class Joystick {
         }
         
         if(connected){
-            
-            //log.write("Found the joystick.");
+            log.write("Found the joystick.");
+            wasConnected = true;
             loop();
+        } else if(wasConnected){
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            reconnect();
+            
         } else {
            log.crtError("Couldn't find the joystick " + name + ".");
         }
@@ -68,6 +77,7 @@ public class Joystick {
                 while(true){
                     if(!controller.poll()){
                         log.crtError("POLL: Disconnected from " + name + ".");
+                        reconnect();
                         break;
                     }
                     bind();
@@ -239,7 +249,51 @@ public class Joystick {
     }
     
     private void fetchHatSwitch(){
+        if(ident == Component.Identifier.Axis.POV){
+            hatswitch = joystick.getPollData();
+        }
         
+        for(int i = 0; i < hatSwitchArr.length; i++){
+            hatSwitchArr[i] = false;
+        }
+        
+        //neutral
+        if(hatswitch == 0.0){
+            hatSwitchArr[0] = true;
+        }
+        //north
+        if(hatswitch == 0.25){
+            hatSwitchArr[1] = true;
+        }
+        //northeast
+        if(hatswitch == 0.375){
+            hatSwitchArr[2] = true;
+        }
+        //east
+        if(hatswitch == 0.5){
+            hatSwitchArr[3] = true;
+        }
+        //southeast
+        if(hatswitch == 0.625){
+            hatSwitchArr[4] = true;
+        }
+        //south
+        if(hatswitch == 0.75){
+            hatSwitchArr[5] = true;
+        }
+        //southwest
+        if(hatswitch == 0.875){
+            hatSwitchArr[6] = true;
+        }
+        //west
+        if(hatswitch == 1.0){
+            hatSwitchArr[7] = true;
+        }
+        //northwest
+        if(hatswitch == 0.125){
+            hatSwitchArr[8] = true;
+        }
+                
     }
     
     private void fetchAxis(){
@@ -326,16 +380,45 @@ public class Joystick {
     }
     
     /**
+     * Returns the hat switch.
+     * @return 
+     */
+    public float getHatSwitchValues(){
+        return hatswitch;
+    }
+    
+    /**
+     * Returns a boolean array of the hatswitch. This is what each array index means. 
+     * 0 = neutral
+     * 1 = north
+     * 2 = northeast
+     * 3 = east
+     * 4 = southeast
+     * 5 = south
+     * 6 = southwest
+     * 7 = west
+     * 8 = northwest
+     * @return 
+     */
+    public boolean[] getHatSwitch(){
+        return hatSwitchArr;
+    }
+    
+    /**
      * Reconnect to the joystick.
      */
     public void reconnect(){
+        connected = false;
+        log.write("Reconnecting.");
         connect();
     }
     
     @Override
     public String toString(){
         return "Joystick" +
-                "\n Name : " + name;
+                "\n Name: " + name +
+                "\n Connected: " + connected;
+        
         
     }
 }
