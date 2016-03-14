@@ -23,6 +23,10 @@ public class Servo {
         if(v > 180){
             v = 180;
         }
+        
+        if(v < 0){
+            v = 0;
+        }
         value = v;
         //log.write("Set the value to " + value + ".");
     }

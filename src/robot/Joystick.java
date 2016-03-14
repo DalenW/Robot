@@ -413,6 +413,14 @@ public class Joystick {
         connect();
     }
     
+    public boolean isConnected(){
+        return connected;
+    }
+    
+    public boolean wasConnected(){
+        return wasConnected;
+    }
+    
     @Override
     public String toString(){
         return "Joystick" +
