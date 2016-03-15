@@ -3,7 +3,7 @@ package test;
 
 
 import com.ward.Console;
-import robot.Joystick;
+import robot.*;
 
 public class main {
     public static void main(String[] args) throws InterruptedException {
@@ -15,11 +15,36 @@ public class main {
         Joystick j = new Joystick("Logitech Extreme 3D");
         j.connect();
         
+        Arduino a = new Arduino("Uno", 115200);
+        a.connect();
         
+        Servo s = new Servo("s1");
+        
+        int deg = 90;
         
         while(true){
-            System.out.println("" + j.getHatSwitch()[0]);
-            Thread.sleep(50);
+            
+            
+            if(j.getHatSwitch()[3]){ //right
+                deg++;
+            }
+            if(j.getHatSwitch()[7]){ //left
+                deg--;
+            }
+            
+            if(deg < 0){
+                deg = 0;
+            } 
+            
+            if(deg > 180){
+                deg = 180;
+            }
+            
+            s.setValue(deg);
+            System.out.println(deg);
+            a.write(s.getValueHex());
+            
+            Thread.sleep(2);
         }
     }
 }
