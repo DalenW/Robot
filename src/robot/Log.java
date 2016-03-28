@@ -21,7 +21,18 @@ public class Log {
      */
     public Log(String n){
         name = n;
+        
+        ClearLogs.clearLogs(new File("Logs"));
+        
         logFile = new File("Logs/" + name + ".txt");
+        int i = 1;
+        
+        while(logFile.exists()){
+            name = name + " " + i;
+            logFile = new File("Logs/" + name + ".txt");
+            i++;
+        }
+        
         logFile.getParentFile().mkdirs();
         try {
             log = new PrintWriter(logFile, "UTF-8");

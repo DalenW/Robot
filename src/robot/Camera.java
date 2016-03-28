@@ -3,8 +3,11 @@ package robot;
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -42,6 +45,7 @@ public class Camera {
             
             if(matchCams.size() == 1){
                 cam = matchCams.get(0);
+                cam.setViewSize(size);
                 log.write("Connected to camera " + cam.getName());
                 connected = true;
                 wasConnected = true;
@@ -73,10 +77,14 @@ public class Camera {
         
         //System.out.println("Done");
         
-        pan = new WebcamPanel(cam);
-        System.out.println(cam.getName());
-        setSize(size);
+        try{
+            pan = new WebcamPanel(cam);
+        } catch(Exception e) {
+            log.crtError("Couldn't add camera to panel.");
+            Logger.getLogger(Camera.class.getName()).log(Level.SEVERE, null, e);
+        }
         
+        log.write("Finished connecting");
     }
     
     public void close(){
@@ -85,8 +93,6 @@ public class Camera {
     
     public void setSize(Dimension d){
         size = d;
-        cam.setViewSize(size);
-        //pan.setPreferredSize(size);
     }
     
     public void displayFPS(boolean b){
@@ -144,7 +150,7 @@ public class Camera {
         return size;
     }
     
-    public Dimension[] possibleSizes(){
+    public Dimension[] getPossibleSizes(){
         return cam.getCustomViewSizes();
     }
     
@@ -158,6 +164,10 @@ public class Camera {
     
     public Dimension getMinSize(){
         return pan.getMinimumSize();
+    }
+    
+    public BufferedImage getImage(){
+        return cam.getImage();
     }
     
     
