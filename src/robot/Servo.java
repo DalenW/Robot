@@ -55,6 +55,18 @@ public class Servo {
         return (double)(value);
     }
     
+    public void addOneDegree(){
+        setValue(value + 1);
+    }
+    
+    public void subOneDegree(){
+        setValue(value - 1);
+    }
+    
+    public void addDegree(int v){
+        setValue(value + v);
+    }
+    
     /**
      * Return the value as a Hexadecimal.
      * @return 
