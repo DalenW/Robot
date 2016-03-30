@@ -24,8 +24,8 @@ public class Log {
         
         ClearLogs.clearLogs(new File("Logs"));
         
-        logFile = new File("Logs/" + name + ".txt");
         int i = 1;
+        logFile = new File("Logs/" + name + " " + i + ".txt");
         
         while(logFile.exists()){
             name = name + " " + i;

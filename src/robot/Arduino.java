@@ -16,6 +16,7 @@ public class Arduino {
     private int rate;
     private String os;
     private int comChoice = -1;
+    private String output;
     
     private CommPortIdentifier portID;
     private SerialPort port;
@@ -135,7 +136,7 @@ public class Arduino {
      * @param s
      */
     public void write(String s) {
-        String w = getOutput(s).toUpperCase();
+        String w = parseOutput(s).toUpperCase();
         
         byte[] b = w.getBytes();
         
@@ -186,7 +187,7 @@ public class Arduino {
      * @param s
      * @return
      */
-    public String getOutput(String s) {
+    public String parseOutput(String s) {
         int r = 24 - s.length();
         String write = 'T' + s;
 
@@ -197,7 +198,12 @@ public class Arduino {
         } else {
             //log.crtError("To many motors and servos.");
         }
+        output = write;
         return write;
+    }
+    
+    public String getOutput(){
+        return output;
     }
 
     @Override

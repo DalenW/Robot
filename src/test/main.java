@@ -3,8 +3,6 @@ package test;
 
 
 import com.ward.Console;
-import java.awt.Dimension;
-import javax.swing.JFrame;
 import robot.*;
 
 public class main {
@@ -12,36 +10,35 @@ public class main {
         Console c = new Console();
         c.build(500, 500, "Robot Testing");
         
-        Camera cam1 = new Camera("USB 2.0 PC Cam"); 
-        cam1.setSize(new Dimension(640, 480));
-        cam1.connect();
-       
+        Joystick j = new Joystick("Logitech Extreme 3D");
+        j.connect();
         
         
-        /*
-        Camera cam2 = new Camera("USB 2.0 PC Cam"); 
-        cam2.connect();
-        cam2.setSize(new Dimension(640, 480));
-        */
-        System.out.println("1: " + cam1.getCamName());
-        //System.out.println("2: " + cam2.getCamName());
         
-        //cam1.displayFPS(true);
-        //cam1.debugMode(true);
-        cam1.displaySize(true);
+        Arduino a = new Arduino("Uno", 115200);
+        a.connect();
         
-        JFrame gui1 = new JFrame();
-        gui1.setVisible(true);
-        gui1.setSize(320, 240);
-        gui1.add(cam1.getCameraPanel());
+        Servo s = new Servo("s1");
+        Motor m1 = new Motor("Motor");
+        Motor m2 = new Motor("Motor");
+        Motor m3 = new Motor("Motor");
         
-        /*
-        JFrame gui2 = new JFrame();
-        gui2.setVisible(true);
-        gui2.setSize(320, 240);
-        gui2.add(cam2.getCameraPanel());
-        */
-        
+        while(true){
+            if(j.getHatSwitch()[3]){ //right
+                s.addDegree(10);
+
+            }
+            if(j.getHatSwitch()[7]){ //left
+                s.subDegree(10);
+            }
+            //System.out.println(s.getValue());
+            
+            //a.write(m1.getValueHex() + m2.getValueHex() + m3.getValueHex() + s.getValueHex());
+            a.write(s.getValueHex());
+            System.out.println(a.getOutput());
+            
+            Thread.sleep(5);
+        }
         
     }
 }

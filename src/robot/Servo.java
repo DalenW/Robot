@@ -7,16 +7,17 @@ public class Servo {
     //public final float max_value = 180; min_value = 0;
     
     /**
-     * Create a new motor with the name n.
+     * Create a new servo with the name n.
      * @param n 
      */
     public Servo(String n){
         name = n;
         log = new Log(name);
+        value = 90;
     }
     
     /**
-     * Set the value of the motor.
+     * Set the value of the servo.
      * @param v 
      */
     public void setValue(int v){
@@ -35,15 +36,7 @@ public class Servo {
      * Returns the value of the servo.
      * @return 
      */
-    public float getValue(){
-        return value;
-    }
-    
-    /**
-     * Returns the value as an int.
-     * @return 
-     */
-    public int getValueInt(){
+    public int getValue(){
         return value;
     }
     
@@ -56,11 +49,11 @@ public class Servo {
     }
     
     public void addOneDegree(){
-        setValue(value + 1);
+        addDegree(1);
     }
     
     public void subOneDegree(){
-        setValue(value - 1);
+        subDegree(1);
     }
     
     public void addDegree(int v){
@@ -89,7 +82,7 @@ public class Servo {
     }
     
     /**
-     * Set the name for the motor.
+     * Set the name for the servo.
      * @param n 
      */
     public void setName(String n){
