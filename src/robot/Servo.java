@@ -67,6 +67,10 @@ public class Servo {
         setValue(value + v);
     }
     
+    public void subDegree(int v){
+        setValue(value - v);
+    }
+    
     /**
      * Return the value as a Hexadecimal.
      * @return 
