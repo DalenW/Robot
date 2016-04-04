@@ -1,16 +1,28 @@
 package robot;
 
-public class DirectWrite {
-    private String name;
-    private int value;
-    private Log log;
+public class Direct {
+    String name;
+    int value;
+    Log log;
+    int port;
+    Arduino a;
     public final int MAX_VALUE = 255, MIN_VALUE = 0;    
     
-    public DirectWrite(String n){
+    public Direct(String n, int p, Arduino a){
         name = n;
+        setPort(p);
         log = new Log(name);
         
+        Robot.addDirect(this);
+        a.setDirect(this, port);
+        
+        value = 0;
+        
         log.write("Created a Direct Write object");
+    }
+    
+    public Direct(int p, Arduino a){
+        this(null, p, a);
     }
     
     public void setValue(int v){
@@ -39,6 +51,29 @@ public class DirectWrite {
     
     public int getValue(){
         return value;
+    }
+    
+    public void setName(String n){
+        name = n;
+    }
+    
+    public String getName(){
+        return name;
+    }
+    
+    public int getPort(){
+        return port;
+    }
+    
+    public boolean setPort(int p){
+        if(p < 2){
+            return false;
+        } else if(p > 14){
+            return false;
+        } else {
+            port = p;
+            return true;
+        }
     }
 
 }

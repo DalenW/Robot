@@ -1,19 +1,17 @@
 package robot;
 
-public class Servo {
-    private String name;
-    private int value;
-    private Log log;
+public class Servo extends Direct{
+   
     //public final float max_value = 180; min_value = 0;
     
     /**
      * Create a new servo with the name n.
      * @param n 
      */
-    public Servo(String n){
-        name = n;
-        log = new Log(name);
+    public Servo(String n, int p, Arduino a){
+        super(n, p, a);
         value = 90;
+        Robot.addServo(this);
     }
     
     /**
@@ -32,21 +30,13 @@ public class Servo {
         //log.write("Set the value to " + value + ".");
     }
     
-    /**
-     * Returns the value of the servo.
-     * @return 
-     */
-    public int getValue(){
-        return value;
+    public void setValueAxisValue(float f){
+        f++;
+        f *= 90;
+        setValue((int) f);
     }
     
-    /**
-     * Returns the value as a double.
-     * @return 
-     */
-    public double getValueDouble(){
-        return (double)(value);
-    }
+    
     
     public void addOneDegree(){
         addDegree(1);
@@ -62,39 +52,6 @@ public class Servo {
     
     public void subDegree(int v){
         setValue(value - v);
-    }
-    
-    /**
-     * Return the value as a Hexadecimal.
-     * @return 
-     */
-    public String getValueHex(){
-        log.write(Integer.toString(value));
-        
-        String h = Integer.toHexString(value);
-        
-        if(h.length() < 2){
-            h = "0" + h;
-        } else if(h.length() > 2){
-            log.Error("Hexidecimal value is too high.");
-        }
-        return h.toUpperCase();
-    }
-    
-    /**
-     * Set the name for the servo.
-     * @param n 
-     */
-    public void setName(String n){
-        name = n;
-    }
-    
-    /**
-     * Get the name of the motor.
-     * @return 
-     */
-    public String getName(){
-        return name;
     }
     
     @Override

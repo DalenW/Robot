@@ -18,6 +18,8 @@ public class Arduino {
     private int comChoice = -1;
     private String output;
     
+    private Direct[] writes = new Direct[12];
+    
     private CommPortIdentifier portID;
     private SerialPort port;
     private java.util.Enumeration<CommPortIdentifier> portEnum;
@@ -36,6 +38,10 @@ public class Arduino {
         name = n;
         rate = r;
         log = new Log(name);
+        
+        for(int i = 0; i < 12; i++){
+            Direct d = new Direct(i + 2, this);
+        }
     }
     
     public Arduino(String n, int r, String c){
@@ -135,8 +141,8 @@ public class Arduino {
      * Write to the Arduino.
      * @param s
      */
-    public void write(String s) {
-        String w = parseOutput(s).toUpperCase();
+    public void write() {
+        String w = getOutput();
         
         byte[] b = w.getBytes();
         
@@ -187,23 +193,14 @@ public class Arduino {
      * @param s
      * @return
      */
-    public String parseOutput(String s) {
-        int r = 24 - s.length();
-        String write = 'T' + s;
-
-        if (r > 0 && r < 25) {
-            for (int i = 0; i < r; i++) {
-                write += "0";
-            }
-        } else {
-            //log.crtError("To many motors and servos.");
+    public String getOutput() {
+        String write = "T";
+        
+        for(int i = 0; i < 12; i++){
+            write += writes[i].getValueHex();
         }
         output = write;
         return write;
-    }
-    
-    public String getOutput(){
-        return output;
     }
 
     @Override
@@ -269,6 +266,10 @@ public class Arduino {
         port.close();
     }
     
+    public void setDirect(Direct d, int p){
+        writes[p - 2] = d;
+    }
+    
     private String getPortTypeName(int p){
         switch(p){
             case CommPortIdentifier.PORT_I2C:
@@ -292,5 +293,20 @@ public class Arduino {
      */
     public String getOS(){
         return os;
+    }
+    
+    public void startWrite(){
+        new Thread(){
+            public void run(){
+                while(true){
+                    write();
+                    try {
+                        Thread.sleep(5);
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            }
+        }.start();
     }
 }
