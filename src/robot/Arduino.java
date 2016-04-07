@@ -93,7 +93,7 @@ public class Arduino {
                     } else { 
                     }
 
-                } else {
+                } else if(coms.size() == 1){
                     portID = coms.get(0);
                     com = portID.getName();
                 }
@@ -101,16 +101,22 @@ public class Arduino {
                 portID = CommPortIdentifier.getPortIdentifier(com);
             }
             
-            port = (SerialPort) portID.open(this.getClass().getName(), rate);
-            openOutStream();
-            openInStream();
-            port.setSerialPortParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
-            
-            Thread.sleep(100);
+            if(portID != null){
+                port = (SerialPort) portID.open(this.getClass().getName(), rate);
+                openOutStream();
+                openInStream();
+                port.setSerialPortParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
 
-            connected = true;
-            log.write("Connected.");
-            log.write("\n\n" + this.toString());
+                Thread.sleep(100);
+
+                connected = true;
+                log.write("Connected.");
+                log.write("\n\n" + this.toString());
+            } else {
+                connected = false;
+                
+            }
+            
         } catch (InterruptedException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedCommOperationException ex) {
