@@ -27,6 +27,8 @@ public class Camera {
         log.write("Added a camera named: " + name);
         
         Webcam.setAutoOpenMode(true);
+        
+        Robot.add(this);
     }
     
     public void connect(){

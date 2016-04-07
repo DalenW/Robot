@@ -11,7 +11,7 @@ public class Servo extends Direct{
     public Servo(String n, int p, Arduino a){
         super(n, p, a);
         value = 90;
-        Robot.addServo(this);
+        Robot.add(this);
     }
     
     /**

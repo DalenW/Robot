@@ -9,7 +9,7 @@ public class Motor extends Direct{
      */
     public Motor(String n, int p, Arduino a){
         super(n, p, a);
-        Robot.addMotor(this);
+        Robot.add(this);
     }
     
     /**
@@ -26,7 +26,8 @@ public class Motor extends Direct{
         value = v;
         
         if(rev){
-            value *= -1;
+            int t = value;
+            value = 200 - t;
         }
         //log.write("Set the value to " + getValueInt() + ".");
     }

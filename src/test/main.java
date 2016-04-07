@@ -11,19 +11,18 @@ public class main {
         c.build(500, 500, "Robot Testing");
         
         Joystick j = new Joystick("Logitech Extreme 3D");
-        j.connect();
+        //j.connect();
         
-        Arduino a = new Arduino("Uno", 115200);
-        //a.connect();
+        Arduino a = new Arduino("Uno", 9600);
+        a.connect();
         
-        Motor m = new Motor("One", 3, a);
-        Servo s = new Servo("Servo 1", 3, a);
+        //Motor m = new Motor("One", 3, a);
+        //Servo s = new Servo("Servo 1", 3, a);
         
-        while(true){
-            m.setValueAxisValue(j.getX());
-            System.out.println(a.getOutput());
-            Thread.sleep(10);
-        }
+        System.out.println(j.getX());
+        
+        
+        
         
     }
 }

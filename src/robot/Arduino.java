@@ -25,7 +25,6 @@ public class Arduino {
     private java.util.Enumeration<CommPortIdentifier> portEnum;
     private OutputStream portOutStream;
     private InputStream portInStream;
-    private BufferedReader input;
 
     /**
      * Add an Arduino
@@ -42,6 +41,8 @@ public class Arduino {
         for(int i = 0; i < 12; i++){
             Direct d = new Direct(i + 2, this);
         }
+        
+        Robot.add(this);
     }
     
     public Arduino(String n, int r, String c){
@@ -107,8 +108,6 @@ public class Arduino {
             
             Thread.sleep(100);
 
-            input = new BufferedReader(new InputStreamReader(port.getInputStream()));
-
             connected = true;
             log.write("Connected.");
             log.write("\n\n" + this.toString());
@@ -116,8 +115,6 @@ public class Arduino {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (UnsupportedCommOperationException ex) {
             log.crtError("Couldn't set port parameters.");
-            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         } catch (PortInUseException ex) {
             log.crtError("Something else is using " + name + ".");
@@ -127,16 +124,7 @@ public class Arduino {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    /*
-    /**
-     * Connect with a specified com choice. 
-     * @param c 
-     *
-    public void connect(int c){
-        comChoice = c;
-        connect();
-    }
-    */
+    
     /**
      * Write to the Arduino.
      * @param s
@@ -148,9 +136,7 @@ public class Arduino {
         
         if(connected && b.length == 25) {
             try {
-                //System.out.println(b);
                 portOutStream.write(b);
-                //portOutStream.flush();
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -220,7 +206,23 @@ public class Arduino {
     }
     
     public String readLine(){
-        return null;
+        String line = null;
+        try {
+            if(portInStream.available() > 0){
+                byte[] b = new byte[portInStream.available()];
+
+                for(int i = 0; i < portInStream.available(); i++){
+                    b[i] = (byte) portInStream.read();
+                }
+
+                line = new String(b);
+                System.out.println(line);
+            }
+        } catch (IOException ex) {
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return line;
     }
     
     public int getRate(){
@@ -248,7 +250,13 @@ public class Arduino {
     }
     
     public void openInStream(){
-        
+        try {
+            log.write("Opening the input stream.");
+            portInStream = port.getInputStream();
+        } catch (IOException ex) {
+            log.crtError("Couldnt open the input stream.");
+            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     public void closeInStream(){

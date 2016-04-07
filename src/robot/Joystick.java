@@ -30,6 +30,8 @@ public class Joystick {
     public Joystick(String n){
         name = n;
         log = new Log(name);
+        
+        Robot.add(this);
     }
     
     /**

@@ -13,7 +13,7 @@ public class Direct {
         setPort(p);
         log = new Log(name);
         
-        Robot.addDirect(this);
+        Robot.add(this);
         a.setDirect(this, port);
         
         value = 0;
