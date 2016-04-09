@@ -10,6 +10,7 @@ public class Robot {
     private static ArrayList<Camera> cameras = new ArrayList();
     private static ArrayList<Arduino> arduinos = new ArrayList();
     private static ArrayList<Joystick> joysticks = new ArrayList();
+    private static ArrayList<Log> logs = new ArrayList();
     private static ArrayList all = new ArrayList();
     
     public static String getVersion(){
@@ -104,6 +105,20 @@ public class Robot {
     
     public static ArrayList<Joystick> getJoysticks(){
         return joysticks;
+    }
+    
+    public static void add(Log s){
+        logs.add(s);
+        all.add(s);
+    }
+    
+    public static void remove(Log s){
+        logs.remove(s);
+        all.remove(s);
+    }
+    
+    public static ArrayList<Log> getLogs(){
+        return logs;
     }
     
     //all

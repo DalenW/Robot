@@ -22,7 +22,7 @@ public class Direct {
     }
     
     public Direct(int p, Arduino a){
-        this(null, p, a);
+        this("###", p, a);
     }
     
     public void setValue(int v){

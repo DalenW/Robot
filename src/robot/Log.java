@@ -24,23 +24,30 @@ public class Log {
         
         ClearLogs.clearLogs(new File("Logs"));
         
-        int i = 1;
-        logFile = new File("Logs/" + name + " " + i + ".txt");
-        
-        while(logFile.exists()){
-            name = name + " " + i;
+        if(!name.equals("###")){
+            int x = 2;
+            for(int i = 0; i < Robot.getLogs().size(); i++){
+                if(Robot.getLogs().get(i).getName().equals(name)){
+                    name = n + " " + x;
+                    x++;
+                }
+            }
+            Robot.add(this);
+
             logFile = new File("Logs/" + name + ".txt");
-            i++;
+
+            logFile.getParentFile().mkdirs();
+            
+            try {
+                log = new PrintWriter(logFile, "UTF-8");
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (UnsupportedEncodingException ex) {
+                Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
-        logFile.getParentFile().mkdirs();
-        try {
-            log = new PrintWriter(logFile, "UTF-8");
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         
     }
     
@@ -49,8 +56,10 @@ public class Log {
      * @param s 
      */
     public void write(String s){
-        log.println(date() + " " + time() + "::" + millis() + " --> " + s);
-        log.flush();
+        if(!name.equals("###")){
+            log.println(date() + " " + time() + "::" + millis() + " --> " + s);
+            log.flush();
+        }
     }
     
     public void Error(String e){
@@ -92,6 +101,10 @@ public class Log {
      */
     public File getFile(){
         return logFile;
+    }
+    
+    public String getName(){
+        return name;
     }
     
     @Override
