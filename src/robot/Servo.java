@@ -12,6 +12,7 @@ public class Servo extends Direct{
         super(n, p, a);
         value = 90;
         Robot.add(this);
+        log.write("This is a servo.");
     }
     
     /**
@@ -27,7 +28,6 @@ public class Servo extends Direct{
             v = 0;
         }
         value = v;
-        //log.write("Set the value to " + value + ".");
     }
     
     public void setValueAxisValue(float f){

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
@@ -19,9 +20,12 @@ public class Camera {
     private Dimension size = new Dimension(320, 240);
     private WebcamPanel pan;
     private JPanel jPanel;
+    private String title;
+    private JLabel panTitle;
     
     public Camera(String n){
         name = n;
+        title = name;
         log = new Log(name);
         
         log.write("Added a camera named: " + name);
@@ -95,6 +99,10 @@ public class Camera {
     
     public void setSize(Dimension d){
         size = d;
+    }
+    
+    public void setTitle(String t){
+        
     }
     
     public void displayFPS(boolean b){

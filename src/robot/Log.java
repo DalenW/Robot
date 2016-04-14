@@ -14,6 +14,7 @@ public class Log {
     private PrintWriter log;
     private File logFile;
     private String name;
+    private boolean main = false;
     
     /**
      * Create a new log. n is the name of the file. 
@@ -45,10 +46,12 @@ public class Log {
             } catch (UnsupportedEncodingException ex) {
                 Logger.getLogger(Log.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
-        
-        
-        
+        }    
+    }
+    
+    public Log(String n, Boolean m){
+        this(n);
+        main = m;
     }
     
     /**
@@ -57,8 +60,12 @@ public class Log {
      */
     public void write(String s){
         if(!name.equals("###")){
-            log.println(date() + " " + time() + "::" + millis() + " --> " + s);
+            String w = date() + " " + time() + "::" + millis() + " --> " + s;
+            log.println(w);
             log.flush();
+            if(main){
+                System.out.println(w);
+            }
         }
     }
     

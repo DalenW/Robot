@@ -148,6 +148,7 @@ public class Arduino {
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        log.write("Writing: " + w);
     }
 
     /**

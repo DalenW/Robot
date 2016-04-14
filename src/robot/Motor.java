@@ -10,6 +10,7 @@ public class Motor extends Direct{
     public Motor(String n, int p, Arduino a){
         super(n, p, a);
         Robot.add(this);
+        log.write("This is a motor.");
     }
     
     /**
@@ -29,7 +30,6 @@ public class Motor extends Direct{
             int t = value;
             value = 200 - t;
         }
-        //log.write("Set the value to " + getValueInt() + ".");
     }
     
     public void setValueAxisValue(float f){
