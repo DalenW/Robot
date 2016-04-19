@@ -91,6 +91,14 @@ public class Camera {
         }
         
         log.write("Finished connecting");
+        
+        if(connected){
+            //System.out.println(cam.getCustomViewSizes().length);
+            for(int i = 0; i < cam.getViewSizes().length; i++){
+                //System.out.println(cam.getCustomViewSizes()[i]);
+            }
+        }
+        
     }
     
     public void close(){

@@ -213,7 +213,7 @@ public class Arduino {
     }
     
     public String readLine(){
-        String line = null;
+        String line = "didn't read :(";
         try {
             if(portInStream.available() > 0){
                 byte[] b = new byte[portInStream.available()];
@@ -224,6 +224,7 @@ public class Arduino {
 
                 line = new String(b);
                 System.out.println(line);
+                return line;
             }
         } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);

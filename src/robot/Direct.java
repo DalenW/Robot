@@ -75,5 +75,9 @@ public class Direct {
             return true;
         }
     }
+    
+    public void scaleValue(double d){
+        this.setValue((int) (value * d));
+    }
 
 }
