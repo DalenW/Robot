@@ -176,26 +176,35 @@ public class Arduino {
     
     public void parseRead(){
         String line = readRaw();
-        line = line.substring(line.indexOf("`"), line.indexOf("`", line.indexOf("`")+1));
-        
-        ArrayList<String> outputs = new ArrayList();
-        
-        for(int i = 1; i < line.length(); i++){
-            if(line.substring(i, i+1).equals("$")){ //start of value
-                i++;
-                
-                String name = "";
-                String value = "";
-                
-                name = line.substring(i, line.indexOf("/"));
-                value = line.substring(line.indexOf("/") + 1, line.length());
-                
-                sensors.get(name).setValue(Float.parseFloat(value));
-                
-                i += line.length() - 1;
+        line += readRaw();
+        if(line.indexOf("`") != -1){
+            if(line.indexOf("`", 1) == -1){
+                line += readRaw();
+            } else {
+                line = line.substring(line.indexOf("`"), line.indexOf("`", line.indexOf("`")+1));
+                ArrayList<String> outputs = new ArrayList();
+
+                for(int i = 1; i < line.length(); i++){
+                    if(line.substring(i, i+1).equals("$")){ //start of value
+                        i++;
+
+                        String name = "";
+                        String value = "";
+
+                        name = line.substring(i, line.indexOf("/"));
+                        value = line.substring(line.indexOf("/") + 1, line.length());
+
+                        sensors.get(name).setValue(Float.parseFloat(value));
+
+                        i += line.length() - 1;
+                        System.out.println("here");
+                    }
+                }
             }
+            
+        } else {
+            System.out.println("can't read");
         }
-        
     }
     
     public String readRaw(){
@@ -209,7 +218,7 @@ public class Arduino {
                 }
 
                 line = new String(b);
-                System.out.println(line);
+                //System.out.println(line);
                 return line;
             }
         } catch (IOException ex) {
@@ -348,7 +357,7 @@ public class Arduino {
                 while(true){
                     write();
                     try {
-                        Thread.sleep(5);
+                        Thread.sleep(100);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
                     }

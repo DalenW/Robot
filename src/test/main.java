@@ -15,14 +15,14 @@ public class main {
         Joystick j = new Joystick("Logitech Extreme 3D");
         //j.connect();
         
-        Arduino a = new Arduino("Uno", 9600);
+        Arduino a = new Arduino("Uno", 115200);
         a.connect();
         
         Sensor t = new Sensor("temperature", 1, a);
         a.startWrite();
         
         while(true){
-            System.out.println(t.getValue());
+            //System.out.println(t.getValue());
             Thread.sleep(50);
         }
     }
