@@ -1,4 +1,8 @@
-package robot;
+package robot.write;
+
+import robot.Robot;
+import robot.devices.Arduino;
+import robot.util.Log;
 
 public class Direct {
     String name;
@@ -11,14 +15,14 @@ public class Direct {
     public Direct(String n, int p, Arduino a){
         name = n;
         setPort(p);
+        value = 0;
+        
         log = new Log(name);
+        log.write("Created a Direct Write object");
         
         Robot.add(this);
         a.setDirect(this, port);
-        
-        value = 0;
-        
-        log.write("Created a Direct Write object");
+        log.write("Added this to the arduino " + a.getName() + ".");
     }
     
     public Direct(int p, Arduino a){

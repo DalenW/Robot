@@ -1,7 +1,7 @@
 #include <Servo.h>
 
 Servo s[12];
-
+int v[12];
 char buffer[25];
 
 void setup() {
@@ -18,8 +18,8 @@ void loop() {
       for(int i = 0; i < 12; i++){
         int b = i * 2;
         b = b+1;
-        s[i].write((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]));
-        //s[i].writeMicroseconds(d2ms((hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1])));
+        v[i] = (hex2dec(buffer[b]) * 16) + hex2dec(buffer[b+1]);
+        s[i].write(v[i]);
       }
     }
   }

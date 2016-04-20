@@ -1,4 +1,4 @@
-package robot;
+package robot.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import robot.Robot;
 
 public class Log {
     private PrintWriter log;

@@ -1,11 +1,16 @@
-package robot;
+package robot.devices;
 
 import gnu.io.*;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import robot.Robot;
+import robot.read.Sensor;
+import robot.util.Log;
+import robot.write.Direct;
 
 public class Arduino {
 
@@ -19,6 +24,7 @@ public class Arduino {
     private String output;
     
     private Direct[] writes = new Direct[12];
+    private HashMap<String, Sensor> sensors = new HashMap();
     
     private CommPortIdentifier portID;
     private SerialPort port;
@@ -143,6 +149,7 @@ public class Arduino {
         if(connected && b.length == 25) {
             try {
                 portOutStream.write(b);
+                parseRead();
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -150,36 +157,7 @@ public class Arduino {
         }
         log.write("Writing: " + w);
     }
-
-    /**
-     * Set the COM port. Runs connect() after.
-     *
-     * @param c
-     */
-    public void setCOM(String c) {
-        com = c;
-        log.write("Changed the COM port to " + com + ".");
-        connect();
-    }
-
-    /**
-     * Returns the COM port.
-     *
-     * @return
-     */
-    public String getCOM() {
-        return com;
-    }
-
-    /**
-     * Returns the name of the Arduino.
-     *
-     * @return
-     */
-    public String getName() {
-        return name;
-    }
-
+    
     /**
      * Returns the hex output being sent to the arduino.
      *
@@ -195,24 +173,32 @@ public class Arduino {
         output = write;
         return write;
     }
-
-    @Override
-    public String toString() {
-        return "Arduino "
-                + "\n Name: " + name
-                + "\n COM Port: " + com
-                + "\n Rate: " + rate;
-    }
-
-    public void reconnect() {
-        connect();
+    
+    public void parseRead(){
+        String line = readRaw();
+        line = line.substring(line.indexOf("`"), line.indexOf("`", line.indexOf("`")+1));
+        
+        ArrayList<String> outputs = new ArrayList();
+        
+        for(int i = 1; i < line.length(); i++){
+            if(line.substring(i, i+1).equals("$")){ //start of value
+                i++;
+                
+                String name = "";
+                String value = "";
+                
+                name = line.substring(i, line.indexOf("/"));
+                value = line.substring(line.indexOf("/") + 1, line.length());
+                
+                sensors.get(name).setValue(Float.parseFloat(value));
+                
+                i += line.length() - 1;
+            }
+        }
+        
     }
     
-    public boolean isConnected(){
-        return connected;
-    }
-    
-    public String readLine(){
+    public String readRaw(){
         String line = "didn't read :(";
         try {
             if(portInStream.available() > 0){
@@ -233,8 +219,21 @@ public class Arduino {
         return line;
     }
     
-    public int getRate(){
-        return port.getBaudRate();
+    public void setDirect(Direct d, int p){
+        writes[p - 2] = d;
+    }
+    
+    public void addSensor(Sensor s){
+        sensors.put(s.getName(), s);
+    }
+    
+    public void removeSensor(Sensor s){
+        sensors.remove(s.getName());
+    }
+    
+    public void close(){
+        closeOutStream();
+        port.close();
     }
     
     public void closeOutStream(){
@@ -276,14 +275,46 @@ public class Arduino {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public void close(){
-        closeOutStream();
-        port.close();
+
+    /**
+     * Set the COM port. Runs connect() after.
+     *
+     * @param c
+     */
+    public void setCOM(String c) {
+        com = c;
+        log.write("Changed the COM port to " + com + ".");
+        connect();
+    }
+
+    /**
+     * Returns the COM port.
+     *
+     * @return
+     */
+    public String getCOM() {
+        return com;
+    }
+
+    /**
+     * Returns the name of the Arduino.
+     *
+     * @return
+     */
+    public String getName() {
+        return name;
     }
     
-    public void setDirect(Direct d, int p){
-        writes[p - 2] = d;
+    public void reconnect() {
+        connect();
+    }
+    
+    public boolean isConnected(){
+        return connected;
+    }
+    
+    public int getRate(){
+        return port.getBaudRate();
     }
     
     private String getPortTypeName(int p){
@@ -325,4 +356,14 @@ public class Arduino {
             }
         }.start();
     }
+    
+    @Override
+    public String toString() {
+        return "Arduino "
+                + "\n Name: " + name
+                + "\n COM Port: " + com
+                + "\n Rate: " + rate;
+    }
 }
+
+

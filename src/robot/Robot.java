@@ -1,6 +1,14 @@
 package robot;
 
 import java.util.ArrayList;
+import robot.devices.Arduino;
+import robot.devices.Camera;
+import robot.devices.Joystick;
+import robot.read.Sensor;
+import robot.util.Log;
+import robot.write.Direct;
+import robot.write.Motor;
+import robot.write.Servo;
 
 public class Robot {
     private static String version = "0.3.7";
@@ -11,6 +19,7 @@ public class Robot {
     private static ArrayList<Arduino> arduinos = new ArrayList();
     private static ArrayList<Joystick> joysticks = new ArrayList();
     private static ArrayList<Log> logs = new ArrayList();
+    private static ArrayList<Sensor> sensors = new ArrayList();
     private static ArrayList all = new ArrayList();
     
     public static String getVersion(){
@@ -119,6 +128,20 @@ public class Robot {
     
     public static ArrayList<Log> getLogs(){
         return logs;
+    }
+    
+    public static void add(Sensor s){
+        sensors.add(s);
+        all.add(s);
+    }
+    
+    public static void remove(Sensor s){
+        sensors.remove(s);
+        all.remove(s);
+    }
+    
+    public static ArrayList<Sensor> getSensors(){
+        return sensors;
     }
     
     //all

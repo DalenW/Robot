@@ -1,4 +1,4 @@
-package robot;
+package robot.devices;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -6,6 +6,8 @@ import net.java.games.input.Component;
 import net.java.games.input.Component.Identifier;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
+import robot.util.Log;
+import robot.Robot;
 
 public class Joystick {
     private String name;

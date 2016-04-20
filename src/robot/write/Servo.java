@@ -1,4 +1,7 @@
-package robot;
+package robot.write;
+
+import robot.Robot;
+import robot.devices.Arduino;
 
 public class Servo extends Direct{
    

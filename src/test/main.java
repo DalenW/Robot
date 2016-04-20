@@ -3,7 +3,9 @@ package test;
 
 
 import com.ward.Console;
-import robot.*;
+import robot.devices.Arduino;
+import robot.devices.Joystick;
+import robot.read.Sensor;
 
 public class main {
     public static void main(String[] args) throws InterruptedException {
@@ -14,20 +16,14 @@ public class main {
         //j.connect();
         
         Arduino a = new Arduino("Uno", 9600);
-        //a.connect();
-        Camera cam = new Camera("USB 2.0 PC Cam");
-        cam.connect();
+        a.connect();
         
-        //Motor m = new Motor("One", 3, a);
-        //Servo s = new Servo("Servo 1", 3, a);
+        Sensor t = new Sensor("temperature", 1, a);
+        a.startWrite();
         
         while(true){
-            //a.readLine();
-            Thread.sleep(10);
+            System.out.println(t.getValue());
+            Thread.sleep(50);
         }
-        
-        
-        
-        
     }
 }

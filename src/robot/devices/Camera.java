@@ -1,4 +1,4 @@
-package robot;
+package robot.devices;
 
 import com.github.sarxos.webcam.Webcam;
 import com.github.sarxos.webcam.WebcamPanel;
@@ -11,6 +11,8 @@ import java.util.logging.Logger;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import robot.util.Log;
+import robot.Robot;
 
 public class Camera {
     private boolean connected, wasConnected;
