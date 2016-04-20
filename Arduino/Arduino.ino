@@ -22,11 +22,24 @@ void loop() {
         s[i].write(v[i]);
       }
     }
+    writeSensors();
   }
 }
 
-int d2ms(int d){
-  return  1000 + (d * 150  + 13) / 27;
+void writeSensors(){
+  String msg = "`";
+
+  //msg = msg + sensLine("temperature", (getVoltage(tempSens) - 0.5) * 100.0);  
+  msg = msg + sensLine("temperature", 1.00);
+  Serial.print(msg + "&");
+}
+
+String sensLine(String n, double v){
+  return "$" + n + "/" + v;
+}
+
+float getVoltage(int p){
+  return(analogRead(p) * 0.004882814);
 }
 
 int hex2dec(char c) { //c is the character that was buffered

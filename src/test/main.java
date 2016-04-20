@@ -22,10 +22,11 @@ public class main {
         a.startWrite();
         
         while(true){
+            a.parseRead();
             
-            String txt = a.readRaw();
-            if(txt.trim().length() > 0){
-                System.out.println(txt);
+            String txt = a.getRawInput().trim();
+            if(txt.length() > 0){
+                //System.out.println(txt);
                 break;
             }
             

@@ -22,7 +22,7 @@ public class Arduino {
     private String os;
     private int comChoice = -1;
     private String output;
-    private String rawInput;
+    private String rawInput = "";
     
     private Direct[] writes = new Direct[12];
     private HashMap<String, Sensor> sensors = new HashMap();
@@ -178,22 +178,31 @@ public class Arduino {
     public void parseRead(){
         String line = readRaw().trim();
         if(line.length() > 1){
-            ArrayList<String> outputs = new ArrayList();
-
+           
+            //System.out.println(line);
+            
             for(int i = 1; i < line.length(); i++){
                 if(line.substring(i, i+1).equals("$")){ //start of value
                     i++;
 
-                    String name = "";
-                    String value = "";
+                    String sensName = "";
+                    String sensValue = "";
 
-                    name = line.substring(i, line.indexOf("/"));
-                    value = line.substring(line.indexOf("/") + 1, line.length());
-
-                    sensors.get(name).setValue(Float.parseFloat(value));
+                    sensName = line.substring(i, line.indexOf("/"));
+                    sensValue = line.substring(line.indexOf("/") + 1, line.indexOf("&"));
+                    
+                    sensName = sensName.trim();
+                    System.out.println(sensName.equals("temperature"));
+                    System.out.println(sensName);
+                    System.out.println(sensors.get("temperature").getName());
+                    System.out.println(sensors.containsKey(sensName));
+                    System.out.println(sensors.containsKey("temperature"));
+                    
+                    //sensors.get(name).setValue((float) 1.00);
+                    
 
                     i += line.length() - 1;
-                    System.out.println("here");
+                    //System.out.println("here");
                 }
             }
         }
@@ -218,13 +227,15 @@ public class Arduino {
                     line += new String(b);
 
                     done = line.substring(0, line.length()/2).contains("`") && line.substring(line.length()/2 + 1, line.length()).contains("&");
+                } else {
+                    //System.out.println("naw");
                 }
             }
+            rawInput = line;
             return line;
         } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
         return line;
     }
     
@@ -234,6 +245,7 @@ public class Arduino {
     
     public void addSensor(Sensor s){
         sensors.put(s.getName(), s);
+        //System.out.println(s.getName());
     }
     
     public void removeSensor(Sensor s){
@@ -326,6 +338,10 @@ public class Arduino {
         return port.getBaudRate();
     }
     
+    public String getRawInput(){
+        return rawInput.trim();
+    }
+    
     private String getPortTypeName(int p){
         switch(p){
             case CommPortIdentifier.PORT_I2C:
@@ -358,6 +374,7 @@ public class Arduino {
                     write();
                     try {
                         Thread.sleep(100);
+                        //readRaw();
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
                     }
