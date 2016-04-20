@@ -22,8 +22,13 @@ public class main {
         a.startWrite();
         
         while(true){
-            //System.out.println(t.getValue());
-            Thread.sleep(50);
+            
+            String txt = a.readRaw();
+            if(txt.trim().length() > 0){
+                System.out.println(txt);
+                break;
+            }
+            
         }
     }
 }

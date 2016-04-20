@@ -430,7 +430,5 @@ public class Joystick {
         return "Joystick" +
                 "\n Name: " + name +
                 "\n Connected: " + connected;
-        
-        
     }
 }

@@ -22,6 +22,7 @@ public class Arduino {
     private String os;
     private int comChoice = -1;
     private String output;
+    private String rawInput;
     
     private Direct[] writes = new Direct[12];
     private HashMap<String, Sensor> sensors = new HashMap();
@@ -149,7 +150,7 @@ public class Arduino {
         if(connected && b.length == 25) {
             try {
                 portOutStream.write(b);
-                parseRead();
+                //parseRead();
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -175,52 +176,51 @@ public class Arduino {
     }
     
     public void parseRead(){
-        String line = readRaw();
-        line += readRaw();
-        if(line.indexOf("`") != -1){
-            if(line.indexOf("`", 1) == -1){
-                line += readRaw();
-            } else {
-                line = line.substring(line.indexOf("`"), line.indexOf("`", line.indexOf("`")+1));
-                ArrayList<String> outputs = new ArrayList();
+        String line = readRaw().trim();
+        if(line.length() > 1){
+            ArrayList<String> outputs = new ArrayList();
 
-                for(int i = 1; i < line.length(); i++){
-                    if(line.substring(i, i+1).equals("$")){ //start of value
-                        i++;
+            for(int i = 1; i < line.length(); i++){
+                if(line.substring(i, i+1).equals("$")){ //start of value
+                    i++;
 
-                        String name = "";
-                        String value = "";
+                    String name = "";
+                    String value = "";
 
-                        name = line.substring(i, line.indexOf("/"));
-                        value = line.substring(line.indexOf("/") + 1, line.length());
+                    name = line.substring(i, line.indexOf("/"));
+                    value = line.substring(line.indexOf("/") + 1, line.length());
 
-                        sensors.get(name).setValue(Float.parseFloat(value));
+                    sensors.get(name).setValue(Float.parseFloat(value));
 
-                        i += line.length() - 1;
-                        System.out.println("here");
-                    }
+                    i += line.length() - 1;
+                    System.out.println("here");
                 }
             }
-            
-        } else {
-            System.out.println("can't read");
         }
+        
+        
     }
     
     public String readRaw(){
         String line = "didn't read :(";
         try {
-            if(portInStream.available() > 0){
-                byte[] b = new byte[portInStream.available()];
+            line = "";
+            
+            boolean done = false;
+            while(!done){
+                if(portInStream.available() > 0){
+                    byte[] b = new byte[portInStream.available()];
 
-                for(int i = 0; i < portInStream.available(); i++){
-                    b[i] = (byte) portInStream.read();
+                    for(int x = 0; x < portInStream.available(); x++){
+                        b[x] = (byte) portInStream.read();
+                    }
+
+                    line += new String(b);
+
+                    done = line.substring(0, line.length()/2).contains("`") && line.substring(line.length()/2 + 1, line.length()).contains("&");
                 }
-
-                line = new String(b);
-                //System.out.println(line);
-                return line;
             }
+            return line;
         } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
