@@ -21,7 +21,7 @@ public class Direct {
         log.write("Created a Direct Write object");
         
         Robot.add(this);
-        a.setDirect(this, port);
+        a.setDirect(this);
         log.write("Added this to the arduino " + a.getName() + ".");
     }
     

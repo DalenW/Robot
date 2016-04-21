@@ -192,7 +192,7 @@ public class Arduino {
                     
                     if(sect.contains("$")){
                         sect = sect.substring(0, sect.indexOf("&"));
-                        //System.out.println(sect);
+                        
                         try{
                             sensName = sect.substring(0, sect.indexOf("/")).trim().replaceAll("[\\W]|_", ""); //remove all non alphanumeric characters
                             sensValue = sect.substring(sect.indexOf("/") + 1).trim().replaceAll("[^\\d.]", ""); //remove all non numeric characters
@@ -205,9 +205,7 @@ public class Arduino {
                         }
                     }
                     
-
                     i += sect.length();
-                    //System.out.println("here");
                 }
             }
         }
@@ -231,14 +229,13 @@ public class Arduino {
                     line += new String(b);
 
                     done = line.substring(0, line.length()/2).contains("`") && line.substring(line.length()/2 + 1, line.length()).contains("*");
-                } else {
-                    //System.out.println("naw");
                 }
             }
             if(done){
                 line = line.substring(line.indexOf("`"), line.indexOf("*", line.indexOf("`")));
             }
             rawInput = line;
+            log.write("Read: " + line);
             return line;
         } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -246,13 +243,14 @@ public class Arduino {
         return line;
     }
     
-    public void setDirect(Direct d, int p){
-        writes[p - 2] = d;
+    public void setDirect(Direct d){
+        writes[d.getPort() - 2] = d;
+        log.write("Added a " + d.getName() + " to port " + d.getPort());
     }
     
     public void addSensor(Sensor s){
         sensors.put(s.getName(), s);
-        //System.out.println(s.getName());
+        log.write("Added sensor " + s.getName());
     }
     
     public void removeSensor(Sensor s){
@@ -318,6 +316,7 @@ public class Arduino {
     public void setLoopRate(int i){
         if(i >= 20){
             loopRate = i;
+            log.write("Changed the loop rate to " + loopRate);
         }
     }
     

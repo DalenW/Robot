@@ -30,6 +30,7 @@ public class Sensor {
     
     public void setValue(double v){
         value = v;
+        log.write("Value: " + v);
     }
     
     public double getValue(){
