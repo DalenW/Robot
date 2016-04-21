@@ -201,7 +201,7 @@ public class Arduino {
                         }
 
                         if(sensName.length() > 0 && sensValue.length() > 0){
-                            sensors.get(sensName).setValue(Float.parseFloat(sensValue));
+                            sensors.get(sensName).setValue(Double.parseDouble(sensValue));
                         }
                     }
                     
@@ -223,7 +223,7 @@ public class Arduino {
                 if(portInStream.available() > 0){
                     byte[] b = new byte[portInStream.available()];
 
-                    for(int x = 0; x < portInStream.available(); x++){
+                    for(int x = 0; x < portInStream.available() && x < b.length; x++){
                         if(x < portInStream.available())
                             b[x] = (byte) portInStream.read();
                     }
@@ -234,6 +234,9 @@ public class Arduino {
                 } else {
                     //System.out.println("naw");
                 }
+            }
+            if(done){
+                line = line.substring(line.indexOf("`"), line.indexOf("*", line.indexOf("`")));
             }
             rawInput = line;
             return line;

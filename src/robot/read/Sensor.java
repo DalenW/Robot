@@ -6,7 +6,7 @@ import robot.util.Log;
 public class Sensor {
     private String name;
     private int type = -1;
-    private float value;
+    private double value;
     
     private Log log;
     private Arduino arduino;
@@ -28,11 +28,11 @@ public class Sensor {
         this(n, -1, a);
     }
     
-    public void setValue(float v){
+    public void setValue(double v){
         value = v;
     }
     
-    public float getValue(){
+    public double getValue(){
         return value;
     }
     
