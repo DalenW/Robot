@@ -182,28 +182,31 @@ public class Arduino {
     public void parseRead(){
         String line = readRaw().trim();
         if(line.length() > 1){
-           
-            //System.out.println(line);
-            
             for(int i = 1; i < line.length(); i++){
                 if(line.substring(i, i+1).equals("$")){ //start of value
                     i++;
-
                     String sensName = "";
                     String sensValue = "";
                     
-                    try{
-                        sensName = line.substring(i, line.indexOf("/")).trim().replaceAll("[\\W]|_", ""); //remove all non alphanumeric characters
-                        sensValue = line.substring(line.indexOf("/") + 1, line.indexOf("&")).trim().replaceAll("[^\\d.]", ""); //remove all non numeric characters
-                    } catch(Exception e){
-                        
+                    String sect = line.substring(i);
+                    
+                    if(sect.contains("$")){
+                        sect = sect.substring(0, sect.indexOf("&"));
+                        //System.out.println(sect);
+                        try{
+                            sensName = sect.substring(0, sect.indexOf("/")).trim().replaceAll("[\\W]|_", ""); //remove all non alphanumeric characters
+                            sensValue = sect.substring(sect.indexOf("/") + 1).trim().replaceAll("[^\\d.]", ""); //remove all non numeric characters
+                        } catch(Exception e){
+
+                        }
+
+                        if(sensName.length() > 0 && sensValue.length() > 0){
+                            sensors.get(sensName).setValue(Float.parseFloat(sensValue));
+                        }
                     }
                     
-                    if(sensName.length() > 0 && sensValue.length() > 0)
-                        sensors.get(sensName).setValue(Float.parseFloat(sensValue));
-                    
 
-                    i += line.length() - 1;
+                    i += sect.length();
                     //System.out.println("here");
                 }
             }
@@ -227,7 +230,7 @@ public class Arduino {
 
                     line += new String(b);
 
-                    done = line.substring(0, line.length()/2).contains("`") && line.substring(line.length()/2 + 1, line.length()).contains("&");
+                    done = line.substring(0, line.length()/2).contains("`") && line.substring(line.length()/2 + 1, line.length()).contains("*");
                 } else {
                     //System.out.println("naw");
                 }

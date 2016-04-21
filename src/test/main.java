@@ -23,7 +23,8 @@ public class main {
         
         while(true){
             
-            System.out.println(t.getValue());
+            System.out.println(t.getValue() + "   " + d.getValue());
+            //System.out.println(a.getRawInput());
             Thread.sleep(a.getLoopRate());
             /*
             a.parseRead();
