@@ -19,9 +19,13 @@ public class main {
         a.connect();
         
         Sensor t = new Sensor("temperature", 1, a);
-        a.startWrite();
+        Sensor d = new Sensor("depth", 2, a);
         
         while(true){
+            
+            System.out.println(t.getValue());
+            Thread.sleep(a.getLoopRate());
+            /*
             a.parseRead();
             
             String txt = a.getRawInput().trim();
@@ -29,7 +33,7 @@ public class main {
                 //System.out.println(txt);
                 break;
             }
-            
+            */
         }
     }
 }

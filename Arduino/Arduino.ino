@@ -30,7 +30,8 @@ void writeSensors(){
   String msg = "`";
 
   //msg = msg + sensLine("temperature", (getVoltage(tempSens) - 0.5) * 100.0);  
-  msg = msg + sensLine("temperature", 1.00);
+  msg += sensLine("temperature", 2.00);
+  
   Serial.print(msg + "&");
 }
 

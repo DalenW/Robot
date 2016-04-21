@@ -23,6 +23,7 @@ public class Arduino {
     private int comChoice = -1;
     private String output;
     private String rawInput = "";
+    private int loopRate = 20;
     
     private Direct[] writes = new Direct[12];
     private HashMap<String, Sensor> sensors = new HashMap();
@@ -136,6 +137,10 @@ public class Arduino {
             log.crtError("Couldn't connect to the " + name + " on port " + com + ".");
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        if(connected){
+            startLoop();
+        }
     }
     
     /**
@@ -150,7 +155,6 @@ public class Arduino {
         if(connected && b.length == 25) {
             try {
                 portOutStream.write(b);
-                //parseRead();
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
                 Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
@@ -187,18 +191,16 @@ public class Arduino {
 
                     String sensName = "";
                     String sensValue = "";
-
-                    sensName = line.substring(i, line.indexOf("/"));
-                    sensValue = line.substring(line.indexOf("/") + 1, line.indexOf("&"));
                     
-                    sensName = sensName.trim();
-                    System.out.println(sensName.equals("temperature"));
-                    System.out.println(sensName);
-                    System.out.println(sensors.get("temperature").getName());
-                    System.out.println(sensors.containsKey(sensName));
-                    System.out.println(sensors.containsKey("temperature"));
+                    try{
+                        sensName = line.substring(i, line.indexOf("/")).trim().replaceAll("[\\W]|_", ""); //remove all non alphanumeric characters
+                        sensValue = line.substring(line.indexOf("/") + 1, line.indexOf("&")).trim().replaceAll("[^\\d.]", ""); //remove all non numeric characters
+                    } catch(Exception e){
+                        
+                    }
                     
-                    //sensors.get(name).setValue((float) 1.00);
+                    if(sensName.length() > 0 && sensValue.length() > 0)
+                        sensors.get(sensName).setValue(Float.parseFloat(sensValue));
                     
 
                     i += line.length() - 1;
@@ -206,8 +208,6 @@ public class Arduino {
                 }
             }
         }
-        
-        
     }
     
     public String readRaw(){
@@ -221,7 +221,8 @@ public class Arduino {
                     byte[] b = new byte[portInStream.available()];
 
                     for(int x = 0; x < portInStream.available(); x++){
-                        b[x] = (byte) portInStream.read();
+                        if(x < portInStream.available())
+                            b[x] = (byte) portInStream.read();
                     }
 
                     line += new String(b);
@@ -307,6 +308,16 @@ public class Arduino {
         log.write("Changed the COM port to " + com + ".");
         connect();
     }
+    
+    public void setLoopRate(int i){
+        if(i >= 20){
+            loopRate = i;
+        }
+    }
+    
+    public int getLoopRate(){
+        return loopRate;
+    }
 
     /**
      * Returns the COM port.
@@ -367,20 +378,36 @@ public class Arduino {
         return os;
     }
     
-    public void startWrite(){
-        new Thread(){
-            public void run(){
-                while(true){
-                    write();
-                    try {
-                        Thread.sleep(100);
-                        //readRaw();
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+    public void startLoop(){
+        if(connected){
+            new Thread(){
+                public void run(){
+                    while(true){
+                        write();
+                        try {
+                            Thread.sleep(loopRate);
+
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 }
-            }
-        }.start();
+            }.start();
+            
+            new Thread(){
+                public void run(){
+                    while(true){
+                        parseRead();
+                        try {
+                            Thread.sleep(loopRate);
+
+                        } catch (InterruptedException ex) {
+                            Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                }
+            }.start();
+        }
     }
     
     @Override
