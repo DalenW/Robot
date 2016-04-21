@@ -6,8 +6,8 @@ import net.java.games.input.Component;
 import net.java.games.input.Component.Identifier;
 import net.java.games.input.Controller;
 import net.java.games.input.ControllerEnvironment;
-import robot.util.Log;
 import robot.Robot;
+import robot.util.Log;
 
 public class Joystick {
     private String name;
@@ -423,6 +423,10 @@ public class Joystick {
     
     public boolean wasConnected(){
         return wasConnected;
+    }
+    
+    public String getName(){
+        return name;
     }
     
     @Override
