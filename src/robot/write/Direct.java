@@ -71,6 +71,7 @@ public class Direct {
     
     public boolean setPort(int p){
         if(p < 2){
+            log.crtError("Tried to set " + name + " to port " + p + ". This needs to be 2 or greater.");
             return false;
         } else if(p > 14){
             return false;
