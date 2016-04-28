@@ -1,5 +1,7 @@
 package robot.devices;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.java.games.input.Component;
@@ -11,19 +13,18 @@ import robot.util.Log;
 
 public class Joystick {
     private String name;
-    private boolean connected = false, wasConnected = false;
+    private boolean connected = false, wasConnected = false, polling = false;
     private Log log;
-    
     private Controller[] device;
     private Controller controller;
     private Component[] components;
     private Component joystick;
     private Identifier ident;
-    
     private float x, y, z, slider, rotation, hatswitch;
-    
-    private boolean[] button = new boolean[32];
-    private boolean[] hatSwitchArr = new boolean[9];
+    private int deviceIndex = -1;
+    private HashMap<Component.Identifier, Float> customValues;
+    private ArrayList<Component.Identifier> customValueNames;
+    private boolean[] button = new boolean[32], hatSwitchArr = new boolean[9];
     
     /**
      * Connect to the joystick with name n.
@@ -32,45 +33,66 @@ public class Joystick {
     public Joystick(String n){
         name = n;
         log = new Log(name);
-        
+        customValues = new HashMap();
+        customValueNames = new ArrayList();
         Robot.add(this);
+        log.write("Created joystick " + name);
         connect();
     }
     
     /**
      * Connect to the joystick. 
      */
-    public void connect(){
-        //System.out.println("Connecting to joystick");
-        device  = ControllerEnvironment.getDefaultEnvironment().getControllers();
-        
+    private void connect(){
         log.write("Connecting to the joystick.");
+        device  = ControllerEnvironment.getDefaultEnvironment().getControllers();
+        ArrayList<Integer> indexes = new ArrayList();
         
         for(int i = 0; i < device.length; i++){
             log.write("Found a controller called " + device[i].getName() + ".");
             if(device[i].getName().equals(name)){
-                log.write("Found the joystick " + device[i].getName() + ".");
-                controller = device[i];
-                components = controller.getComponents();
-                connected = true;
-                i = device.length;
+                indexes.add(i);
+            }
+        }
+        int sameNames = 0;
+        for(Joystick j : Robot.getJoysticks()) if(j.getName().equals(name) && j.connected) sameNames++;
+        
+        if(sameNames == indexes.size()) log.crtError("No joysticks with this name left to connect to!");
+        else if(indexes.size() == 1) connectJoystick(indexes.get(0));
+        else if(indexes.isEmpty()) log.crtError("Couldn't find joystick!");
+        else {
+            int i = 0;
+            for(Joystick j : Robot.getJoysticks()){
+                if(j.getName().equals(name) && j.connected){
+                    if(indexes.get(i) > j.getDeviceIndex()) connectJoystick(indexes.get(i));
+                    else i++;
+                }
             }
         }
         
-        if(connected){
-            log.write("Found the joystick.");
-            wasConnected = true;
-            loop();
-        } else if(wasConnected){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException ex) {
-                Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        if(wasConnected){
+            try { Thread.sleep(100); }
+            catch (InterruptedException ex){ Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);}
             reconnect();
-        } else {
-           log.crtError("Couldn't find the joystick " + name + ".");
         }
+    }
+    
+    private void connectJoystick(int i){
+        controller = device[i];
+        components = controller.getComponents();
+        deviceIndex = i;
+        connected = true;
+        wasConnected = true;
+        log.write("Connected to the joystick.");
+    }
+    
+    /**
+     * Reconnect to the joystick.
+     */
+    public void reconnect(){
+        connected = false;
+        log.write("Reconnecting.");
+        connect();
     }
     
     private void loop(){
@@ -79,17 +101,16 @@ public class Joystick {
             public void run(){
                 while(true){
                     if(!controller.poll()){
+                        polling = false;
                         log.crtError("POLL: Disconnected from " + name + ".");
                         reconnect();
                         break;
+                    } else {
+                        polling = true;
+                        bind();
                     }
-                    bind();
-                    
-                    try {
-                        Thread.sleep(16);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);
-                    }
+                    try { Thread.sleep(50); }
+                    catch (InterruptedException ex){ Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);}
                 }
             }
         }.start();
@@ -101,24 +122,12 @@ public class Joystick {
             joystick = components[i];
             ident = joystick.getIdentifier();
             
-            //buttons
-            if(joystick.getName().contains("Button")){
-                boolean pressed;
-                
-                if(joystick.getPollData() == 0.0f){
-                    pressed = false;
-                    fetchButtons(pressed);
-                } else {
-                    pressed = true;
-                    fetchButtons(pressed);
-                }  
+            if(joystick.getName().contains("Button")) fetchButtons(!(joystick.getPollData() == 0f));
+            else {
+                fetchHatSwitch();
+                fetchAxis();
             }
-            
-            //hat switch
-            fetchHatSwitch();
-            
-            //axis
-            fetchAxis();
+            fetchCustom();
         }
     }
     
@@ -156,76 +165,44 @@ public class Joystick {
     }
     
     private void fetchHatSwitch(){
-        if(ident == Component.Identifier.Axis.POV){
-            hatswitch = joystick.getPollData();
-        }
+        if(ident == Component.Identifier.Axis.POV) hatswitch = joystick.getPollData();
         
-        for(int i = 0; i < hatSwitchArr.length; i++){
-            hatSwitchArr[i] = false;
-        }
+        for(int i = 0; i < hatSwitchArr.length; i++) hatSwitchArr[i] = false;
         
-        //neutral
-        if(hatswitch == Component.POV.CENTER){
-            hatSwitchArr[0] = true;
-        }
-        //north
-        if(hatswitch == Component.POV.UP){
-            hatSwitchArr[1] = true;
-        }
-        //northeast
-        if(hatswitch == Component.POV.UP_RIGHT){
-            hatSwitchArr[2] = true;
-        }
-        //east
-        if(hatswitch == Component.POV.RIGHT){
-            hatSwitchArr[3] = true;
-        }
-        //southeast
-        if(hatswitch == Component.POV.DOWN_RIGHT){
-            hatSwitchArr[4] = true;
-        }
-        //south
-        if(hatswitch == Component.POV.DOWN){
-            hatSwitchArr[5] = true;
-        }
-        //southwest
-        if(hatswitch == Component.POV.DOWN_LEFT){
-            hatSwitchArr[6] = true;
-        }
-        //west
-        if(hatswitch == Component.POV.LEFT){
-            hatSwitchArr[7] = true;
-        }
-        //northwest
-        if(hatswitch == Component.POV.UP_LEFT){
-            hatSwitchArr[8] = true;
-        }
-                
+        if(hatswitch == Component.POV.CENTER) hatSwitchArr[0] = true; //neutral
+        if(hatswitch == Component.POV.UP) hatSwitchArr[1] = true; //north
+        if(hatswitch == Component.POV.UP_RIGHT) hatSwitchArr[2] = true; //northeast
+        if(hatswitch == Component.POV.RIGHT) hatSwitchArr[3] = true; //east
+        if(hatswitch == Component.POV.DOWN_RIGHT) hatSwitchArr[4] = true; //southeast
+        if(hatswitch == Component.POV.DOWN) hatSwitchArr[5] = true; //south
+        if(hatswitch == Component.POV.DOWN_LEFT) hatSwitchArr[6] = true; //southwest
+        if(hatswitch == Component.POV.LEFT) hatSwitchArr[7] = true; //west
+        if(hatswitch == Component.POV.UP_LEFT) hatSwitchArr[8] = true; //northwest        
     }
     
     private void fetchAxis(){
         if(joystick.isAnalog()){
             float axis = joystick.getPollData();
             
-            if(ident == Component.Identifier.Axis.X){
-                x = axis;
-            }
-            
-            if(ident == Component.Identifier.Axis.Y){
-                y = axis;
-            }
-            
-            if(ident == Component.Identifier.Axis.Z){
-                z = axis;
-            }
-            
-            if(ident == Component.Identifier.Axis.SLIDER){
-                slider = axis;
-            }
-            
-            if(joystick.getName().equals("Z Rotation")){
-                rotation = axis;
-            }
+            if(ident == Component.Identifier.Axis.X) x = axis;
+            if(ident == Component.Identifier.Axis.Y) y = axis;
+            if(ident == Component.Identifier.Axis.Z) z = axis;
+            if(ident == Component.Identifier.Axis.SLIDER) slider = axis;
+            if(joystick.getName().equals("Z Rotation")) rotation = axis;
+        }
+    }
+    
+    private void fetchCustom(){
+        for(int i = 0; i < customValueNames.size(); i++) if(ident == customValueNames.get(i)) customValues.replace(customValueNames.get(i), joystick.getPollData());
+    }
+    
+    public float getValue(Component.Identifier c){
+        if(customValues.containsKey(c)){
+            return customValues.get(c);
+        } else {
+            customValues.put(c, 0f);
+            customValueNames.add(c);
+            return getValue(c);
         }
     }
     
@@ -233,67 +210,43 @@ public class Joystick {
      * Returns the array of button values.
      * @return 
      */
-    public boolean[] getButtonArray(){
-        return button;
-    }
-    
+    public boolean[] getButtonArray(){return button;}
     /**
      * Returns the button value of index i
      * @param i
      * @return 
      */
-    public boolean getButton(int i){
-        return button[i];
-    }
-    
+    public boolean getButton(int i){return button[i];}
     /**
      * Returns x.
      * @return 
      */
-    public float getX(){
-        return x;
-    }
-    
+    public float getX(){return x;}
     /**
      * Returns y.
      * @return 
      */
-    public float getY(){
-        return -y;
-    }
-    
+    public float getY(){return -y;}
     /**
      * Returns z.
      * @return 
      */
-    public float getZ(){
-        return z;
-    }
-    
+    public float getZ(){return z;}
     /**
      * Returns rotation.
      * @return 
      */
-    public float getRotation(){
-        return rotation;
-    }
-    
+    public float getRotation(){return rotation;}
     /**
      * Returns slider.
      * @return 
      */
-    public float getSlider(){
-        return slider;
-    }
-    
+    public float getSlider(){return slider;}
     /**
      * Returns the hat switch.
      * @return 
      */
-    public float getHatSwitchValues(){
-        return hatswitch;
-    }
-    
+    public float getHatSwitchValues(){return hatswitch;}
     /**
      * Returns a boolean array of the hatswitch. This is what each array index means. 
      * 0 = neutral
@@ -307,35 +260,9 @@ public class Joystick {
      * 8 = northwest
      * @return 
      */
-    public boolean[] getHatSwitch(){
-        return hatSwitchArr;
-    }
-    
-    /**
-     * Reconnect to the joystick.
-     */
-    public void reconnect(){
-        connected = false;
-        log.write("Reconnecting.");
-        connect();
-    }
-    
-    public boolean isConnected(){
-        return connected;
-    }
-    
-    public boolean wasConnected(){
-        return wasConnected;
-    }
-    
-    public String getName(){
-        return name;
-    }
-    
-    @Override
-    public String toString(){
-        return "Joystick" +
-                "\n Name: " + name +
-                "\n Connected: " + connected;
-    }
+    public boolean[] getHatSwitch(){return hatSwitchArr;}
+    public boolean isConnected(){return connected;}
+    public boolean wasConnected(){return wasConnected;}
+    public String getName(){return name;}
+    public int getDeviceIndex(){return deviceIndex;}
 }

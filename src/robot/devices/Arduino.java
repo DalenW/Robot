@@ -51,7 +51,6 @@ public class Arduino {
         }
         
         Robot.add(this);
-        connect();
     }
     
     public Arduino(String n, int r, String c){
@@ -414,14 +413,6 @@ public class Arduino {
                 }
             }.start();
         }
-    }
-    
-    @Override
-    public String toString() {
-        return "Arduino "
-                + "\n Name: " + name
-                + "\n COM Port: " + com
-                + "\n Rate: " + rate;
     }
 }
 

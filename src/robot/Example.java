@@ -14,7 +14,6 @@ class Example {
         
         log.write("Adding joystick");
         Joystick j = new Joystick("Logitech Extreme 3D"); //name of the joystick as it appears in devices and printers
-        j.connect(); //connect to joystick
         
         log.write("Adding Arduino");
         Arduino a = new Arduino("Uno", 115200); //name doesn't matter, just for log and reference. number is the baud rate of the arduino
