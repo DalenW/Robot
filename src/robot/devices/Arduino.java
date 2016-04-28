@@ -51,6 +51,7 @@ public class Arduino {
         }
         
         Robot.add(this);
+        connect();
     }
     
     public Arduino(String n, int r, String c){

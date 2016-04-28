@@ -13,10 +13,9 @@ public class main {
         c.build(500, 500, "Robot Testing");
         
         Joystick j = new Joystick("Logitech Extreme 3D");
-        //j.connect();
+        
         
         Arduino a = new Arduino("Uno", 115200);
-        a.connect();
         
         Sensor t = new Sensor("temperature", 1, a);
         Sensor d = new Sensor("depth", 2, a);
