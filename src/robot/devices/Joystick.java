@@ -70,11 +70,12 @@ public class Joystick {
             }
         }
         
-        if(wasConnected){
+        if(wasConnected && !connected){
             try { Thread.sleep(100); }
             catch (InterruptedException ex){ Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);}
             reconnect();
         }
+        loop();
     }
     
     private void connectJoystick(int i){
@@ -125,8 +126,9 @@ public class Joystick {
             if(joystick.getName().contains("Button")) fetchButtons(!(joystick.getPollData() == 0f));
             else {
                 fetchHatSwitch();
-                fetchAxis();
+                //fetchAxis();
             }
+            fetchAxis();
             fetchCustom();
         }
     }

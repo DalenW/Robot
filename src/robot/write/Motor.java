@@ -33,6 +33,7 @@ public class Motor extends Direct{
             int t = value;
             value = 200 - t;
         }
+        v *= scale;
     }
     
     public void setValueAxisValue(float f){
@@ -62,11 +63,5 @@ public class Motor extends Direct{
      */
     public void setReverse(boolean b){
         rev = b;
-    }
-    
-    @Override
-    public String toString(){
-        return "Motor" + 
-                "\n Name: " + name;
     }
 }

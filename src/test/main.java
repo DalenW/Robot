@@ -21,19 +21,8 @@ public class main {
         Sensor d = new Sensor("depth", 2, a);
         
         while(true){
+            System.out.println(j.getX());
             
-            System.out.println(t.getValue() + "   " + d.getValue());
-            //System.out.println(a.getRawInput());
-            Thread.sleep(a.getLoopRate());
-            /*
-            a.parseRead();
-            
-            String txt = a.getRawInput().trim();
-            if(txt.length() > 0){
-                //System.out.println(txt);
-                break;
-            }
-            */
         }
     }
 }

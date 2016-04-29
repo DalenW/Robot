@@ -10,7 +10,8 @@ public class Direct {
     Log log;
     int port;
     Arduino a;
-    public final int MAX_VALUE = 255, MIN_VALUE = 0;    
+    public final int MAX_VALUE = 255, MIN_VALUE = 0;
+    double scale = 1.0;
     
     public Direct(String n, int p, Arduino a){
         name = n;
@@ -80,9 +81,9 @@ public class Direct {
             return true;
         }
     }
-    
+    //MAGIC, HOPES AND DREAMS MAKE ROBOTS WORK
     public void scaleValue(double d){
-        this.setValue((int) (value * d));
+        if(d > 0 && d < 1) scale = d;
     }
 
 }
