@@ -17,7 +17,9 @@ public class Motor extends Direct{
     }
     
     /**
-     * Set the value of the motor.
+     * Set the value of the motor. 
+     * The values of the motor range from 0 to 200. Anything above and below that get set to the respectable max or min. 
+     * 0 is reverse and 200 is forward, 100 is neutral and anything between that is self explanetory. 
      * @param v 
      */
     public void setValue(int v){
@@ -29,6 +31,7 @@ public class Motor extends Direct{
         
         value = v;
         
+        //if you reversed the motor, this reverses the values. This is not to be used to go backwards, this actually flips all the values. 
         if(rev){
             int t = value;
             value = 200 - t;
@@ -36,12 +39,15 @@ public class Motor extends Direct{
         v *= scale;
     }
     
+    //set the value if it was a value from the joystick. 
+    //the joystick returns values as -1f to 1f, so this adds 1 making it from 0 - 2, multiplies it by 100 and turns it into an int before sending it off to setValue()
     public void setValueAxisValue(float f){
         f++;
         f *= 100.0000;
         setValue((int)f);
     }
     
+    //returns the value as an axis value, between -1f and 1f.
     public float getValueAsAxis(){
         float f;
         f = value/100;

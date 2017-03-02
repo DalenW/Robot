@@ -11,6 +11,9 @@ public class Sensor {
     private Log log;
     private Arduino arduino;
     
+    /*
+    The sesor class for the robot
+    */
     public Sensor(String n, int t, Arduino a){
         name = n;
         type = t;

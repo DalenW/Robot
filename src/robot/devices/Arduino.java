@@ -46,6 +46,8 @@ public class Arduino {
         rate = r;
         log = new Log(name);
         
+        //create 12 empty direct objects on this arduino. They'll return 0 when called for value. 
+        //The arduino object stores an arry of 12 direct objects to read from. That's why I fill it with blank direct objects on initialization.
         for(int i = 0; i < 12; i++){
             Direct d = new Direct(i + 2, this);
         }
@@ -53,6 +55,7 @@ public class Arduino {
         Robot.add(this);
     }
     
+    //not really a use for this. I never finished adding a manual com port. Or maybe I did IDK. 
     public Arduino(String n, int r, String c){
         this(n, r);
         com = c;
@@ -68,21 +71,30 @@ public class Arduino {
         try {
             if(com == null){
                 log.write("Listing port options");
+                //an array list of all the com port options
                 ArrayList<CommPortIdentifier> coms = new ArrayList();
-
+                
+                //if there are ports avaliable
                 if(portEnum.hasMoreElements()){
+                    //go through the list of ports
                     while(portEnum.hasMoreElements()){
+                        //create a com port object or something
                         CommPortIdentifier cp = portEnum.nextElement();
                         log.write(cp.getName() + " - " + getPortTypeName(cp.getPortType()));
-
+                        
+                        //if the port is type serial, add it to the possible com port list. 
                         if(cp.getPortType() == CommPortIdentifier.PORT_SERIAL){
                             coms.add(cp);
                         }
                     }
-                } else {
+                } else { //if theres no ports avaliable
                     log.crtError("Couldn't find an Arduino.");
                 }
-
+                /*
+                if theres more then one com port in the list. bascially multiple arduinos or devices connected.
+                for use on macs when itunes creates like 6 comm port devices for some reason.
+                This code makes a popup come up and ask the user what com port to use for the arduino. 
+                */
                 if(coms.size() > 1){
                     log.crtError("More than one serial interface detected.");
                     //log.write("Make sure that itunes is completly shutdown. ");
@@ -93,12 +105,12 @@ public class Arduino {
                     }
 
                     if(comChoice == -1){
+                        //the popup
                         comChoice = Integer.parseInt(JOptionPane.showInputDialog(message));
                         log.write("\n\n" + message);
                         log.write("Selected " + comChoice);
                         portID = CommPortIdentifier.getPortIdentifier(coms.get(comChoice - 1).getName());
                         com = portID.getName();
-                    } else { 
                     }
 
                 } else if(coms.size() == 1){
@@ -109,8 +121,11 @@ public class Arduino {
                 portID = CommPortIdentifier.getPortIdentifier(com);
             }
             
+            //if connected
             if(portID != null){
+                //open the port
                 port = (SerialPort) portID.open(this.getClass().getName(), rate);
+                //open the data streams
                 openOutStream();
                 openInStream();
                 port.setSerialPortParams(rate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, SerialPort.PARITY_NONE);
@@ -122,7 +137,6 @@ public class Arduino {
                 log.write("\n\n" + this.toString());
             } else {
                 connected = false;
-                
             }
             
         } catch (InterruptedException ex) {
@@ -138,6 +152,7 @@ public class Arduino {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        //start the write and read loop
         if(connected){
             startLoop();
         }
@@ -145,6 +160,7 @@ public class Arduino {
     
     /**
      * Write to the Arduino.
+     * Pretty simple, write the output stream in the form of a byte array. 
      * @param s
      */
     public void write() {
@@ -154,6 +170,7 @@ public class Arduino {
         
         if(connected && b.length == 25) {
             try {
+                //write the bytes
                 portOutStream.write(b);
             } catch (IOException ex) {
                 log.crtError("IO Exception when writing to Arduino " + name + ".");
@@ -170,8 +187,10 @@ public class Arduino {
      * @return
      */
     public String getOutput() {
+        //start the string with T to verify its mine on the ardiuno
         String write = "T";
         
+        //get the hex values from the direct write array
         for(int i = 0; i < 12; i++){
             write += writes[i].getValueHex();
         }
@@ -179,6 +198,12 @@ public class Arduino {
         return write;
     }
     
+    /*
+    I hate this code it took me so long to write this function. 
+    basically this code gets the raw input from the arduino, splits it up into the respectable sensor values, and set the values. 
+    
+    Dont worry about this unless you need sensors on the robot. 
+    */
     public void parseRead(){
         String line = readRaw().trim();
         if(line.length() > 1){
@@ -193,6 +218,7 @@ public class Arduino {
                     if(sect.contains("$")){
                         sect = sect.substring(0, sect.indexOf("&"));
                         
+                        //random crap gets added on to the message so using string == didn't work. this fixes that. 
                         try{
                             sensName = sect.substring(0, sect.indexOf("/")).trim().replaceAll("[\\W]|_", ""); //remove all non alphanumeric characters
                             sensValue = sect.substring(sect.indexOf("/") + 1).trim().replaceAll("[^\\d.]", ""); //remove all non numeric characters
@@ -211,6 +237,7 @@ public class Arduino {
         }
     }
     
+    //reads the bytes from the arduino input stream and converts it to a string
     public String readRaw(){
         String line = "didn't read :(";
         try {
@@ -227,10 +254,15 @@ public class Arduino {
                     }
 
                     line += new String(b);
-
+                    
+                    /*
+                    The string from the arduino isn't clean at all. Because it reads at a rate, sometimes you'll get half a message,
+                    or a quarter message and a full message. Basically its messy. This basically checks that a message has a beginning and then a end. 
+                    */
                     done = line.substring(0, line.length()/2).contains("`") && line.substring(line.length()/2 + 1, line.length()).contains("*");
                 }
             }
+            //if a message has a beginning and an end, cut the string there. 
             if(done){
                 line = line.substring(line.indexOf("`"), line.indexOf("*", line.indexOf("`")));
             }
@@ -240,9 +272,11 @@ public class Arduino {
         } catch (IOException ex) {
             Logger.getLogger(Arduino.class.getName()).log(Level.SEVERE, null, ex);
         }
+        //allways has to return something  ¯\_(ツ)_/¯ because this will fail often due to incomplete messages. 
         return line;
     }
     
+    //sets the direct object to the port, replacing the one previously there. 
     public void setDirect(Direct d){
         writes[d.getPort() - 2] = d;
         log.write("Added a " + d.getName() + " to port " + d.getPort());
@@ -257,6 +291,7 @@ public class Arduino {
         sensors.remove(s.getName());
     }
     
+    //close the streams. closeInStream() used to be here but its not and I don't want to break it so...
     public void close(){
         closeOutStream();
         port.close();
@@ -313,6 +348,7 @@ public class Arduino {
         connect();
     }
     
+    //the rate to loop the read and write at
     public void setLoopRate(int i){
         if(i >= 20){
             loopRate = i;
@@ -383,6 +419,7 @@ public class Arduino {
         return os;
     }
     
+    //this starts the read and write loop. A different thread is created for each loop so you can multitask. 
     public void startLoop(){
         if(connected){
             new Thread(){

@@ -33,6 +33,8 @@ public class Joystick {
     public Joystick(String n){
         name = n;
         log = new Log(name);
+        
+        //create a hashmap for custom values. I didn't use this but the code is there. A custom value is used when a joystick has a feature that isn't recognized or something I dont reall remember. 
         customValues = new HashMap();
         customValueNames = new ArrayList();
         Robot.add(this);
@@ -45,25 +47,39 @@ public class Joystick {
      */
     private void connect(){
         log.write("Connecting to the joystick.");
+        
+        //get all the devices
         device  = ControllerEnvironment.getDefaultEnvironment().getControllers();
         ArrayList<Integer> indexes = new ArrayList();
         
+        //go through the list of devices and find one that equals the name of the joystick you want. 
         for(int i = 0; i < device.length; i++){
             log.write("Found a controller called " + device[i].getName() + ".");
             if(device[i].getName().equals(name)){
+                //add the joystick to the list of posible devices
                 indexes.add(i);
             }
         }
         int sameNames = 0;
-        for(Joystick j : Robot.getJoysticks()) if(j.getName().equals(name) && j.connected) sameNames++;
+        //find if any of the possible devices has the same name. aka if you have multiple joysticks of the same name. 
+        for(Joystick j : Robot.getJoysticks()) if(j.getName().equals(name) && j.connected) 
+            sameNames++;
         
-        if(sameNames == indexes.size()) log.crtError("No joysticks with this name left to connect to!");
-        else if(indexes.size() == 1) connectJoystick(indexes.get(0));
-        else if(indexes.isEmpty()) log.crtError("Couldn't find joystick!");
+        if(sameNames == indexes.size()) 
+            log.crtError("No joysticks with this name left to connect to!");
+        else if(indexes.size() == 1) 
+            connectJoystick(indexes.get(0)); //if theres one joystick, connect
+        else if(indexes.isEmpty()) 
+            log.crtError("Couldn't find joystick!");
         else {
+            //if theres multiple joysticks
             int i = 0;
+            /*
+            if any of the joysticks with the same name are already connected, move onto the next joystick. 
+            This is why vevik was being gay. While his code was shorter, it couldn't do this. This can handle multiple joysticks of the same name. 
+            */
             for(Joystick j : Robot.getJoysticks()){
-                if(j.getName().equals(name) && j.connected){
+                if(j.getName().equals(name) && j.connected){ 
                     if(indexes.get(i) > j.getDeviceIndex()) connectJoystick(indexes.get(i));
                     else i++;
                 }
@@ -78,6 +94,7 @@ public class Joystick {
         loop();
     }
     
+    //now that we've found the joystick that we want, connect to it. 
     private void connectJoystick(int i){
         controller = device[i];
         components = controller.getComponents();
@@ -96,6 +113,7 @@ public class Joystick {
         connect();
     }
     
+    //the loop to get the values from the joystick. In a new thread so you can multitask ofc
     private void loop(){
         log.write("Beginning poll loop.");
         new Thread(){
@@ -110,20 +128,25 @@ public class Joystick {
                         polling = true;
                         bind();
                     }
-                    try { Thread.sleep(50); }
-                    catch (InterruptedException ex){ Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);}
+                    try { 
+                        Thread.sleep(50); 
+                    } catch (InterruptedException ex){ 
+                        Logger.getLogger(Joystick.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                 }
             }
         }.start();
         log.write("Succesfully created poll loop.");
     }
     
+    //go through every component the joystick has to offer and get the value
     private void bind(){
         for(int i = 0; i < components.length; i++){
             joystick = components[i];
             ident = joystick.getIdentifier();
             
-            if(joystick.getName().contains("Button")) fetchButtons(!(joystick.getPollData() == 0f));
+            if(joystick.getName().contains("Button")) 
+                fetchButtons(!(joystick.getPollData() == 0f));
             else {
                 fetchHatSwitch();
                 //fetchAxis();
@@ -195,7 +218,9 @@ public class Joystick {
     }
     
     private void fetchCustom(){
-        for(int i = 0; i < customValueNames.size(); i++) if(ident == customValueNames.get(i)) customValues.replace(customValueNames.get(i), joystick.getPollData());
+        for(int i = 0; i < customValueNames.size(); i++) 
+            if(ident == customValueNames.get(i)) 
+                customValues.replace(customValueNames.get(i), joystick.getPollData());
     }
     
     public float getValue(Component.Identifier c){

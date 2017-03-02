@@ -20,6 +20,7 @@ public class Servo extends Direct{
     
     /**
      * Set the value of the servo.
+     * This is the value of the servo in degrees. 
      * @param v 
      */
     public void setValue(int v){
@@ -33,13 +34,12 @@ public class Servo extends Direct{
         value = v;
     }
     
+    //set the value if it was a value from the joystick, which is from -1f to 1f. same as motor
     public void setValueAxisValue(float f){
         f++;
         f *= 90;
         setValue((int) f);
     }
-    
-    
     
     public void addOneDegree(){
         addDegree(1);
